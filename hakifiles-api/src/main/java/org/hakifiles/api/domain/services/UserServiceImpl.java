@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUserPerPage(PaginationDto pagination) {
         PageRequest p = PageRequest.of(pagination.getOffSet(), pagination.getLimit());
-        return (List<User>) repository.findAll();
+        return (List<User>) repository.findAll(p).stream().toList();
     }
 
     @Override
