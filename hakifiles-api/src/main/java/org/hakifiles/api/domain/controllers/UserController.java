@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController()
 public class UserController {
@@ -38,6 +35,20 @@ public class UserController {
     public ResponseEntity<?> createUser(@Valid @RequestBody User user, BindingResult result) {
         if (result.hasErrors()) {
             return validate(result);
+        }
+
+        List<String> rol = user.getRol();
+
+        if (rol == null) {
+            rol = new ArrayList<String>();
+        }
+        if (!rol.contains("user")) {
+            rol.add("user");
+        }
+        user.setRol(rol);
+
+        if (user.getDeckList() == null) {
+            user.setDeckList(new ArrayList<Long>());
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(service.saveUser(user));
