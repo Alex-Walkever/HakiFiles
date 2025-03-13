@@ -1,6 +1,8 @@
 package org.hakifiles.api.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
@@ -12,21 +14,21 @@ public class CardInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
     private String image;
+    @NotBlank
     private String cardId;
-    private List<String> type;
+    @NotEmpty
     private Category category;
+    @NotEmpty
     private Integer alternateArt;
-    private String Product;
-    private List<ColorCard> colorCards;
+    @NotBlank
+    private String product;
+    @NotBlank
+    private String productCode;
+    @NotEmpty
     private Rarity rarity;
-    private Integer life;
-    private Integer cost;
-    private Integer power;
-    private Integer counterPower;
-    private List<String> attribute;
-    private String effect;
+    @NotEmpty
+    private List<ColorCard> colorCards;
 
     public static enum Rarity {
         COMMON,
@@ -53,20 +55,20 @@ public class CardInfo {
         CHARACTER
     }
 
+    public static enum Attribute {
+        SLASH,
+        STRIKE,
+        RANGED,
+        SPECIAL,
+        WISDOM
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getImage() {
@@ -83,14 +85,6 @@ public class CardInfo {
 
     public void setCardId(String cardId) {
         this.cardId = cardId;
-    }
-
-    public List<String> getType() {
-        return type;
-    }
-
-    public void setType(List<String> type) {
-        this.type = type;
     }
 
     public Category getCategory() {
@@ -110,19 +104,19 @@ public class CardInfo {
     }
 
     public String getProduct() {
-        return Product;
+        return product;
     }
 
     public void setProduct(String product) {
-        Product = product;
+        this.product = product;
     }
 
-    public List<ColorCard> getColorCards() {
-        return colorCards;
+    public String getProductCode() {
+        return productCode;
     }
 
-    public void setColorCards(List<ColorCard> colorCards) {
-        this.colorCards = colorCards;
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
     }
 
     public Rarity getRarity() {
@@ -133,51 +127,11 @@ public class CardInfo {
         this.rarity = rarity;
     }
 
-    public Integer getLife() {
-        return life;
+    public List<ColorCard> getColorCards() {
+        return colorCards;
     }
 
-    public void setLife(Integer life) {
-        this.life = life;
-    }
-
-    public Integer getCost() {
-        return cost;
-    }
-
-    public void setCost(Integer cost) {
-        this.cost = cost;
-    }
-
-    public Integer getPower() {
-        return power;
-    }
-
-    public void setPower(Integer power) {
-        this.power = power;
-    }
-
-    public Integer getCounterPower() {
-        return counterPower;
-    }
-
-    public void setCounterPower(Integer counterPower) {
-        this.counterPower = counterPower;
-    }
-
-    public List<String> getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(List<String> attribute) {
-        this.attribute = attribute;
-    }
-
-    public String getEffect() {
-        return effect;
-    }
-
-    public void setEffect(String effect) {
-        this.effect = effect;
+    public void setColorCards(List<ColorCard> colorCards) {
+        this.colorCards = colorCards;
     }
 }
