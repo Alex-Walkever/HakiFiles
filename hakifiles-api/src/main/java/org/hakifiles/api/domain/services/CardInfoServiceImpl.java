@@ -1,14 +1,16 @@
 package org.hakifiles.api.domain.services;
 
+import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
-import org.hakifiles.api.domain.entities.User;
+import org.hakifiles.api.domain.mappers.CardMapper;
 import org.hakifiles.api.domain.repositories.CardInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CardInfoServiceImpl implements CardInfoService {
@@ -73,8 +75,8 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public CardInfo getCardByCardId(String cardId) {
-        return null;
+    public Optional<CardInfo> getCardByCardId(String cardId) {
+        return repository.findByCardId(cardId);
     }
 
     @Override
@@ -103,13 +105,15 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public CardInfo saveCard(CardInfo info) {
-        return null;
+    public CardInfo saveCard(CardDto info) {
+        CardInfo cardInfo = CardMapper.toCardInfo(info);
+        repository.save(cardInfo);
+        return cardInfo;
     }
 
     @Override
     public void deleteCard(Long id) {
-
+        repository.deleteById(id);
     }
 
     @Override

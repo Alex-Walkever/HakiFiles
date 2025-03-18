@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -17,18 +18,26 @@ public class CardInfo {
     private String image;
     @NotBlank
     private String cardId;
-    @NotEmpty
+    @NotNull
     private Category category;
-    @NotEmpty
+    @NotNull
     private Integer alternateArt;
     @NotBlank
     private String product;
     @NotBlank
     private String productCode;
-    @NotEmpty
+    @NotNull
     private Rarity rarity;
     @NotEmpty
     private List<ColorCard> colorCards;
+
+    @NotNull
+    private TournamentStatus tournamentStatus;
+
+    public static enum TournamentStatus {
+        LEGAL,
+        BANNED
+    }
 
     public static enum Rarity {
         COMMON,
@@ -133,5 +142,29 @@ public class CardInfo {
 
     public void setColorCards(List<ColorCard> colorCards) {
         this.colorCards = colorCards;
+    }
+
+    public TournamentStatus getTournamentStatus() {
+        return tournamentStatus;
+    }
+
+    public void setTournamentStatus(TournamentStatus tournamentStatus) {
+        this.tournamentStatus = tournamentStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "CardInfo{" +
+                "id=" + id +
+                ", image='" + image + '\'' +
+                ", cardId='" + cardId + '\'' +
+                ", category=" + category +
+                ", alternateArt=" + alternateArt +
+                ", product='" + product + '\'' +
+                ", productCode='" + productCode + '\'' +
+                ", rarity=" + rarity +
+                ", colorCards=" + colorCards +
+                ", tournamentStatus=" + tournamentStatus +
+                '}';
     }
 }

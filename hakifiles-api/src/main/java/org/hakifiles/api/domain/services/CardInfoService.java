@@ -1,9 +1,11 @@
 package org.hakifiles.api.domain.services;
 
+import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CardInfoService {
     List<CardInfo> getCardsByPage(PaginationDto pagination);
@@ -28,7 +30,7 @@ public interface CardInfoService {
 
     List<CardInfo> getCardsByName(PaginationDto pagination, String name);
 
-    CardInfo getCardByCardId(String cardId);
+    Optional<CardInfo> getCardByCardId(String cardId);
 
     List<CardInfo> getCardsByType(PaginationDto pagination, String type);
 
@@ -40,7 +42,7 @@ public interface CardInfoService {
 
     List<CardInfo> getCardsByAttribute(PaginationDto pagination, String attribute);
 
-    CardInfo saveCard(CardInfo info);
+    CardInfo saveCard(CardDto info);
 
     void deleteCard(Long id);
 

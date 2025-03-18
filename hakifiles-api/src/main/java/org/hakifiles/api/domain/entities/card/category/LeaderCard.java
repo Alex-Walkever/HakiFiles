@@ -3,6 +3,8 @@ package org.hakifiles.api.domain.entities.card.category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hakifiles.api.domain.entities.CardInfo;
 
 import java.util.List;
@@ -19,10 +21,11 @@ public class LeaderCard {
     @NotEmpty
     private List<String> type;
     @NotEmpty
-    private List<String> effects;
-    @NotEmpty
+    @Size(max = 1000)
+    private String effects;
+    @NotNull
     private Integer life;
-    @NotEmpty
+    @NotNull
     private Integer power;
     @NotEmpty
     private List<CardInfo.Attribute> attribute;
@@ -51,11 +54,11 @@ public class LeaderCard {
         this.type = type;
     }
 
-    public List<String> getEffects() {
+    public String getEffects() {
         return effects;
     }
 
-    public void setEffects(List<String> effects) {
+    public void setEffects(String effects) {
         this.effects = effects;
     }
 
@@ -81,5 +84,18 @@ public class LeaderCard {
 
     public void setAttribute(List<CardInfo.Attribute> attribute) {
         this.attribute = attribute;
+    }
+
+    @Override
+    public String toString() {
+        return "LeaderCard{" +
+                "CardId='" + CardId + '\'' +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", effects=" + effects +
+                ", life=" + life +
+                ", power=" + power +
+                ", attribute=" + attribute +
+                '}';
     }
 }
