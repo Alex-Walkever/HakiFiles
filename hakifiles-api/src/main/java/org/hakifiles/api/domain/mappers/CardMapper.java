@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.mappers;
 import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 import org.hakifiles.api.domain.entities.card.category.CharacterCard;
+import org.hakifiles.api.domain.entities.card.category.EventCard;
 import org.hakifiles.api.domain.entities.card.category.LeaderCard;
 import org.hakifiles.api.domain.entities.card.category.StageCard;
 
@@ -66,7 +67,11 @@ public class CardMapper {
         character.setTriggerEffect(cardDto.triggerEffect);
         character.setCost(Integer.parseInt(cardDto.cost));
         character.setPower(Integer.parseInt(cardDto.power));
-        character.setCounterPower(Integer.parseInt(cardDto.counterPower));
+        if (cardDto.counterPower.isEmpty()) {
+            character.setCounterPower(0);
+        } else {
+            character.setCounterPower(Integer.parseInt(cardDto.counterPower));
+        }
         character.setAttribute(getAttributeList(cardDto.attribute));
         return character;
     }
@@ -80,6 +85,17 @@ public class CardMapper {
         stage.setTriggerEffect(cardDto.triggerEffect);
         stage.setCost(Integer.parseInt(cardDto.cost));
         return stage;
+    }
+
+    public static EventCard toEventCard(CardDto cardDto) {
+        EventCard event = new EventCard();
+        event.setCardId(cardDto.cardId);
+        event.setName(cardDto.name);
+        event.setType(getTypeList(cardDto.type));
+        event.setEffects(cardDto.effects);
+        event.setTriggerEffect(cardDto.triggerEffect);
+        event.setCost(Integer.parseInt(cardDto.cost));
+        return event;
     }
 
     private static List<CardInfo.Attribute> getAttributeList(String attribute) {
