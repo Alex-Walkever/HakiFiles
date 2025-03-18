@@ -1,8 +1,9 @@
 package org.hakifiles.api.domain.services;
 
+import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
-import org.hakifiles.api.domain.entities.User;
+import org.hakifiles.api.domain.mappers.CardMapper;
 import org.hakifiles.api.domain.repositories.CardInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -103,8 +104,8 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public CardInfo saveCard(CardInfo info) {
-        return null;
+    public CardInfo saveCard(CardDto info) {
+        return CardMapper.toCardInfo(info);
     }
 
     @Override
