@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CardInfoServiceImpl implements CardInfoService {
@@ -74,8 +75,8 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public CardInfo getCardByCardId(String cardId) {
-        return null;
+    public Optional<CardInfo> getCardByCardId(String cardId) {
+        return repository.findByCardId(cardId);
     }
 
     @Override
@@ -105,12 +106,14 @@ public class CardInfoServiceImpl implements CardInfoService {
 
     @Override
     public CardInfo saveCard(CardDto info) {
-        return CardMapper.toCardInfo(info);
+        CardInfo cardInfo = CardMapper.toCardInfo(info);
+        repository.save(cardInfo);
+        return cardInfo;
     }
 
     @Override
     public void deleteCard(Long id) {
-
+        repository.deleteById(id);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -17,20 +18,20 @@ public class CardInfo {
     private String image;
     @NotBlank
     private String cardId;
-    @NotEmpty
+    @NotNull
     private Category category;
-    @NotEmpty
+    @NotNull
     private Integer alternateArt;
     @NotBlank
     private String product;
     @NotBlank
     private String productCode;
-    @NotEmpty
+    @NotNull
     private Rarity rarity;
     @NotEmpty
     private List<ColorCard> colorCards;
 
-    @NotEmpty
+    @NotNull
     private TournamentStatus tournamentStatus;
 
     public static enum TournamentStatus {

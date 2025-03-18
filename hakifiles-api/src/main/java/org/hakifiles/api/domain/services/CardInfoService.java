@@ -5,6 +5,7 @@ import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CardInfoService {
     List<CardInfo> getCardsByPage(PaginationDto pagination);
@@ -29,7 +30,7 @@ public interface CardInfoService {
 
     List<CardInfo> getCardsByName(PaginationDto pagination, String name);
 
-    CardInfo getCardByCardId(String cardId);
+    Optional<CardInfo> getCardByCardId(String cardId);
 
     List<CardInfo> getCardsByType(PaginationDto pagination, String type);
 
