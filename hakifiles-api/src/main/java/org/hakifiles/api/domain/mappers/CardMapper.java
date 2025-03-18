@@ -2,6 +2,7 @@ package org.hakifiles.api.domain.mappers;
 
 import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.entities.CardInfo;
+import org.hakifiles.api.domain.entities.card.category.CharacterCard;
 import org.hakifiles.api.domain.entities.card.category.LeaderCard;
 
 import java.util.ArrayList;
@@ -47,27 +48,49 @@ public class CardMapper {
         LeaderCard leader = new LeaderCard();
         leader.setCardId(cardDto.cardId);
         leader.setName(cardDto.name);
-        if (cardDto.type.contains("/")) {
-            String[] stringType = cardDto.type.split("/");
-            leader.setType(Arrays.stream(stringType).toList());
-        } else {
-            List<String> typeList = new ArrayList<>();
-            typeList.add(cardDto.type);
-            leader.setType(typeList);
-        }
+        leader.setType(getTypeList(cardDto.type));
         leader.setEffects(cardDto.effects);
         leader.setLife(Integer.parseInt(cardDto.life));
         leader.setPower(Integer.parseInt(cardDto.power));
+        leader.setAttribute(getAttributeList(cardDto.attribute));
+        return leader;
+    }
+
+    public static CharacterCard toCharacterCard(CardDto cardDto) {
+        CharacterCard character = new CharacterCard();
+        character.setCardId(cardDto.cardId);
+        character.setName(cardDto.name);
+        character.setType(getTypeList(cardDto.type));
+        character.setEffects(cardDto.effects);
+        character.setTriggerEffect(cardDto.triggerEffect);
+        character.setCost(Integer.parseInt(cardDto.cost));
+        character.setPower(Integer.parseInt(cardDto.power));
+        character.setCounterPower(Integer.parseInt(cardDto.counterPower));
+        character.setAttribute(getAttributeList(cardDto.attribute));
+        return character;
+    }
+
+    private static List<CardInfo.Attribute> getAttributeList(String attribute) {
         List<CardInfo.Attribute> attributes = new ArrayList<>();
-        if (cardDto.attribute.contains("/")) {
-            String[] stringAttribute = cardDto.attribute.split("/");
+        if (attribute.contains("/")) {
+            String[] stringAttribute = attribute.split("/");
             for (String s : stringAttribute) {
                 attributes.add(CardInfo.Attribute.valueOf(s));
             }
         } else {
-            attributes.add(CardInfo.Attribute.valueOf(cardDto.attribute));
+            attributes.add(CardInfo.Attribute.valueOf(attribute));
         }
-        leader.setAttribute(attributes);
-        return leader;
+        return attributes;
+    }
+
+    private static List<String> getTypeList(String type) {
+        List<String> typeList = new ArrayList<>();
+        if (type.contains("/")) {
+            String[] stringType = type.split("/");
+            typeList.addAll(Arrays.asList(stringType));
+        } else {
+            typeList.add(type);
+        }
+        return typeList;
     }
 }

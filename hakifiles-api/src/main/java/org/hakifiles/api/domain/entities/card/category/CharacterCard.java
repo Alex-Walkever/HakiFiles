@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.entities.card.category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.hakifiles.api.domain.entities.CardInfo;
 
 import java.util.List;
@@ -18,13 +19,13 @@ public class CharacterCard {
     private String name;
     @NotEmpty
     private List<String> type;
-    private List<String> effects;
+    private String effects;
     private String triggerEffect;
-    @NotEmpty
+    @NotNull
     private Integer cost;
-    @NotEmpty
+    @NotNull
     private Integer power;
-    @NotEmpty
+    @NotNull
     private Integer counterPower;
     @NotEmpty
     private List<CardInfo.Attribute> attribute;
@@ -53,11 +54,11 @@ public class CharacterCard {
         this.type = type;
     }
 
-    public List<String> getEffects() {
+    public String getEffects() {
         return effects;
     }
 
-    public void setEffects(List<String> effects) {
+    public void setEffects(String effects) {
         this.effects = effects;
     }
 
@@ -99,5 +100,20 @@ public class CharacterCard {
 
     public void setAttribute(List<CardInfo.Attribute> attribute) {
         this.attribute = attribute;
+    }
+
+    @Override
+    public String toString() {
+        return "CharacterCard{" +
+                "CardId='" + CardId + '\'' +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", effects=" + effects +
+                ", triggerEffect='" + triggerEffect + '\'' +
+                ", cost=" + cost +
+                ", power=" + power +
+                ", counterPower=" + counterPower +
+                ", attribute=" + attribute +
+                '}';
     }
 }
