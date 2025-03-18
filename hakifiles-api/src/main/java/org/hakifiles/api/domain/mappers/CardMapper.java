@@ -4,6 +4,7 @@ import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 import org.hakifiles.api.domain.entities.card.category.CharacterCard;
 import org.hakifiles.api.domain.entities.card.category.LeaderCard;
+import org.hakifiles.api.domain.entities.card.category.StageCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +69,17 @@ public class CardMapper {
         character.setCounterPower(Integer.parseInt(cardDto.counterPower));
         character.setAttribute(getAttributeList(cardDto.attribute));
         return character;
+    }
+
+    public static StageCard toStageCard(CardDto cardDto) {
+        StageCard stage = new StageCard();
+        stage.setCardId(cardDto.cardId);
+        stage.setName(cardDto.name);
+        stage.setType(getTypeList(cardDto.type));
+        stage.setEffects(cardDto.effects);
+        stage.setTriggerEffect(cardDto.triggerEffect);
+        stage.setCost(Integer.parseInt(cardDto.cost));
+        return stage;
     }
 
     private static List<CardInfo.Attribute> getAttributeList(String attribute) {

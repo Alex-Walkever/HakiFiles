@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.entities.card.category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -18,9 +19,9 @@ public class StageCard {
     @NotEmpty
     private List<String> type;
     @NotEmpty
-    private List<String> effects;
+    private String effects;
     private String triggerEffect;
-    @NotEmpty
+    @NotNull
     private Integer cost;
 
     public String getCardId() {
@@ -47,11 +48,11 @@ public class StageCard {
         this.type = type;
     }
 
-    public List<String> getEffects() {
+    public String getEffects() {
         return effects;
     }
 
-    public void setEffects(List<String> effects) {
+    public void setEffects(String effects) {
         this.effects = effects;
     }
 
@@ -69,5 +70,17 @@ public class StageCard {
 
     public void setCost(Integer cost) {
         this.cost = cost;
+    }
+
+    @Override
+    public String toString() {
+        return "StageCard{" +
+                "CardId='" + CardId + '\'' +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", effects=" + effects +
+                ", triggerEffect='" + triggerEffect + '\'' +
+                ", cost=" + cost +
+                '}';
     }
 }

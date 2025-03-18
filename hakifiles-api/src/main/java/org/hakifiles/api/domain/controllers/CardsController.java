@@ -5,6 +5,7 @@ import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 import org.hakifiles.api.domain.entities.card.category.CharacterCard;
 import org.hakifiles.api.domain.entities.card.category.LeaderCard;
+import org.hakifiles.api.domain.entities.card.category.StageCard;
 import org.hakifiles.api.domain.services.CardInfoService;
 import org.hakifiles.api.domain.services.card.category.CharacterCardService;
 import org.hakifiles.api.domain.services.card.category.EventCardService;
@@ -48,7 +49,9 @@ public class CardsController {
                 safeToAdd = true;
                 System.out.println(characterCard.toString());
             } else if (dto.category.equals(CardInfo.Category.STAGE.toString())) {
-
+                StageCard stageCard = stageCardService.saveCard(dto);
+                safeToAdd = true;
+                System.out.println(stageCard.toString());
             } else if (dto.category.equals(CardInfo.Category.EVENT.toString())) {
 
             }
@@ -80,7 +83,11 @@ public class CardsController {
                 }
 
             } else if (cardInfo.getCategory() == CardInfo.Category.STAGE) {
-
+                Optional<StageCard> sc = stageCardService.getStageCardByCardId(cardId);
+                if (sc.isPresent()) {
+                    stageCardService.delete(cardId);
+                    safeCardDelete = true;
+                }
             } else if (cardInfo.getCategory() == CardInfo.Category.EVENT) {
 
             }
