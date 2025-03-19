@@ -12,5 +12,7 @@ public interface CardInfoRepository extends JpaRepository<CardInfo, Long> {
     //@Query("select u from CardInfo u where u.category = ?1")
     List<CardInfo> findByCategory(CardInfo.Category category, Pageable pageable);
 
+    List<CardInfo> findByBlock(Integer block, Pageable pageable);
+
     Optional<CardInfo> findByCardId(String cardId);
 }

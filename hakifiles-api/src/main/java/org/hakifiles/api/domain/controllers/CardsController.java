@@ -37,6 +37,41 @@ public class CardsController {
         return ResponseEntity.ok(cardInfoService.getCardsByCategory(paginationDto, category));
     }
 
+    @GetMapping("/api/cards/block")
+    public ResponseEntity<List<CardInfo>> getCardsByBlock(@RequestBody PaginationDto paginationDto, @RequestParam Integer Block) {
+        return ResponseEntity.ok(cardInfoService.getCardsByBlock(paginationDto, Block));
+    }
+
+    @GetMapping("/api/cards/{cardId}")
+    public ResponseEntity<CardInfo> getCardInfoByCardId(@PathVariable String cardId) {
+        Optional<CardInfo> card = cardInfoService.getCardByCardId(cardId);
+        return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/cards/characters/{cardId}")
+    public ResponseEntity<CharacterCard> getCharacterDetails(@PathVariable String cardId) {
+        Optional<CharacterCard> card = characterCardService.getCharacterCardByCardId(cardId);
+        return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/cards/events/{cardId}")
+    public ResponseEntity<EventCard> getEventDetails(@PathVariable String cardId) {
+        Optional<EventCard> card = eventCardService.getEventCardByCardId(cardId);
+        return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/cards/leaders/{cardId}")
+    public ResponseEntity<LeaderCard> getLeaderDetails(@PathVariable String cardId) {
+        Optional<LeaderCard> card = leaderCardService.getLeaderCardByCardId(cardId);
+        return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/cards/stages/{cardId}")
+    public ResponseEntity<StageCard> getStageDetails(@PathVariable String cardId) {
+        Optional<StageCard> card = stageCardService.getStageCardByCardId(cardId);
+        return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/api/cards")
     public ResponseEntity<?> addMultipleCards(@RequestBody List<CardDto> cardDto) {
         for (CardDto dto : cardDto) {

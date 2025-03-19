@@ -12,6 +12,8 @@ public interface CardInfoService {
 
     List<CardInfo> getCardsByCategory(PaginationDto pagination, CardInfo.Category category);
 
+    List<CardInfo> getCardsByBlock(PaginationDto pagination, Integer block);
+
     List<CardInfo> getCardsByColor(PaginationDto pagination, CardInfo.ColorCard color);
 
     List<CardInfo> getCardsByRarity(PaginationDto pagination, CardInfo.Rarity rarity);

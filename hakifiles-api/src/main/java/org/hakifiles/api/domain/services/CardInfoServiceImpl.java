@@ -30,6 +30,12 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
+    public List<CardInfo> getCardsByBlock(PaginationDto pagination, Integer block) {
+        PageRequest p = PageRequest.of(pagination.getOffSet(), pagination.getLimit());
+        return repository.findByBlock(block, p);
+    }
+
+    @Override
     public List<CardInfo> getCardsByColor(PaginationDto pagination, CardInfo.ColorCard color) {
         return List.of();
     }
