@@ -1,4 +1,4 @@
-package org.hakifiles.api.domain.repositories.card.category;
+package org.hakifiles.api.domain.repositories.card.category.stage;
 
 import org.hakifiles.api.domain.entities.card.category.StageCard;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
+@RequestMapping("/api/cards")
 public class CardsController {
     @Autowired
     CardInfoService cardInfoService;
@@ -32,47 +32,69 @@ public class CardsController {
     @Autowired
     StageCardService stageCardService;
 
-    @GetMapping("/api/cards/category")
+    @GetMapping("/search")
+    public ResponseEntity<List<CardInfo>> getCardsByDynamicSearch(@RequestParam Map<String, String> requestParam) {
+        if (requestParam.containsKey("category")) {
+            Set<String> cardsId = new HashSet<>();
+            List<String> category = new ArrayList<>(Arrays.stream(requestParam.get("category").split(",")).toList());
+            if (category.contains("CHARACTER")) {
+                List<CharacterCard> charactersCardsByFilter = characterCardService.getCharactersCardsByFilter(requestParam);
+                for (CharacterCard ccf : charactersCardsByFilter) {
+                    cardsId.add(ccf.getCardId());
+                }
+            }
+
+            return ResponseEntity.ok(cardInfoService.getCardsByListCardId(cardsId.stream().toList()));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/product")
+    public ResponseEntity<List<CardInfo>> getCardsByProduct(@RequestBody PaginationDto paginationDto, @RequestParam String product) {
+        return ResponseEntity.ok(cardInfoService.getCardsByProduct(paginationDto, product));
+    }
+
+    @GetMapping("/category")
     public ResponseEntity<List<CardInfo>> getCardsByCategory(@RequestBody PaginationDto paginationDto, @RequestParam CardInfo.Category category) {
         return ResponseEntity.ok(cardInfoService.getCardsByCategory(paginationDto, category));
     }
 
-    @GetMapping("/api/cards/block")
-    public ResponseEntity<List<CardInfo>> getCardsByBlock(@RequestBody PaginationDto paginationDto, @RequestParam Integer Block) {
-        return ResponseEntity.ok(cardInfoService.getCardsByBlock(paginationDto, Block));
+    @GetMapping("/block")
+    public ResponseEntity<List<CardInfo>> getCardsByBlock(@RequestBody PaginationDto paginationDto, @RequestParam Integer block) {
+        return ResponseEntity.ok(cardInfoService.getCardsByBlock(paginationDto, block));
     }
 
-    @GetMapping("/api/cards/{cardId}")
+    @GetMapping("/{cardId}")
     public ResponseEntity<CardInfo> getCardInfoByCardId(@PathVariable String cardId) {
         Optional<CardInfo> card = cardInfoService.getCardByCardId(cardId);
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/api/cards/characters/{cardId}")
+    @GetMapping("/characters/{cardId}")
     public ResponseEntity<CharacterCard> getCharacterDetails(@PathVariable String cardId) {
         Optional<CharacterCard> card = characterCardService.getCharacterCardByCardId(cardId);
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/api/cards/events/{cardId}")
+    @GetMapping("/events/{cardId}")
     public ResponseEntity<EventCard> getEventDetails(@PathVariable String cardId) {
         Optional<EventCard> card = eventCardService.getEventCardByCardId(cardId);
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/api/cards/leaders/{cardId}")
+    @GetMapping("/leaders/{cardId}")
     public ResponseEntity<LeaderCard> getLeaderDetails(@PathVariable String cardId) {
         Optional<LeaderCard> card = leaderCardService.getLeaderCardByCardId(cardId);
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/api/cards/stages/{cardId}")
+    @GetMapping("/stages/{cardId}")
     public ResponseEntity<StageCard> getStageDetails(@PathVariable String cardId) {
         Optional<StageCard> card = stageCardService.getStageCardByCardId(cardId);
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/api/cards")
+    @PostMapping("")
     public ResponseEntity<?> addMultipleCards(@RequestBody List<CardDto> cardDto) {
         for (CardDto dto : cardDto) {
             boolean safeToAdd = false;
@@ -101,7 +123,7 @@ public class CardsController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/api/cards/{cardId}")
+    @DeleteMapping("/{cardId}")
     public ResponseEntity<?> removeCard(@PathVariable String cardId) {
         Optional<CardInfo> ci = cardInfoService.getCardByCardId(cardId);
         if (ci.isPresent()) {
