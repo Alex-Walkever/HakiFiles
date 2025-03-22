@@ -19,6 +19,7 @@ public class CharacterCard {
     @NotBlank
     private String name;
     @NotEmpty
+    @ElementCollection
     private List<String> type;
     @Size(max = 1000)
     private String effects;
@@ -31,6 +32,7 @@ public class CharacterCard {
     @NotNull
     private Integer counterPower;
     @NotEmpty
+    @ElementCollection
     private List<CardInfo.Attribute> attribute;
 
     public String getCardId() {

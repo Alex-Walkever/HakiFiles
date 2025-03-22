@@ -42,6 +42,7 @@ public class CardMapper {
             colors.add(CardInfo.ColorCard.valueOf(cardDto.colorsCard));
             info.setColorCards(colors);
         }
+        info.setBlock(Integer.parseInt(cardDto.block));
         info.setTournamentStatus(CardInfo.TournamentStatus.valueOf(cardDto.tournamentStatus));
         return info;
     }

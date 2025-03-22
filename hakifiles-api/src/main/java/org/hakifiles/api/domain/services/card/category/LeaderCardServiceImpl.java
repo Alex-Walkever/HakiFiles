@@ -3,7 +3,7 @@ package org.hakifiles.api.domain.services.card.category;
 import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.entities.card.category.LeaderCard;
 import org.hakifiles.api.domain.mappers.CardMapper;
-import org.hakifiles.api.domain.repositories.card.category.LeaderCardRepository;
+import org.hakifiles.api.domain.repositories.card.category.leader.LeaderCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

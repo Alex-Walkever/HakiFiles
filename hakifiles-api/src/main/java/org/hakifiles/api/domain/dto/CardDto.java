@@ -17,6 +17,7 @@ public class CardDto {
     public String rarity;
     public String colorsCard;
     public String tournamentStatus;
+    public String block;
 
     // To LeaderCard
     public String name;

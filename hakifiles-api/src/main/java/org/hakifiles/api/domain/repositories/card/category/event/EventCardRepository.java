@@ -1,4 +1,4 @@
-package org.hakifiles.api.domain.repositories.card.category;
+package org.hakifiles.api.domain.repositories.card.category.event;
 
 import org.hakifiles.api.domain.entities.card.category.EventCard;
 import org.springframework.data.jpa.repository.JpaRepository;

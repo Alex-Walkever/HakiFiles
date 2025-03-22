@@ -32,6 +32,9 @@ public class CardInfo {
     private List<ColorCard> colorCards;
 
     @NotNull
+    private Integer block;
+
+    @NotNull
     private TournamentStatus tournamentStatus;
 
     public static enum TournamentStatus {
@@ -142,6 +145,14 @@ public class CardInfo {
 
     public void setColorCards(List<ColorCard> colorCards) {
         this.colorCards = colorCards;
+    }
+
+    public Integer getBlock() {
+        return block;
+    }
+
+    public void setBlock(Integer block) {
+        this.block = block;
     }
 
     public TournamentStatus getTournamentStatus() {
