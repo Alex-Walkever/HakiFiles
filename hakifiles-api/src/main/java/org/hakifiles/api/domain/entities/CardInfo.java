@@ -29,6 +29,7 @@ public class CardInfo {
     @NotNull
     private Rarity rarity;
     @NotEmpty
+    @ElementCollection
     private List<ColorCard> colorCards;
 
     @NotNull

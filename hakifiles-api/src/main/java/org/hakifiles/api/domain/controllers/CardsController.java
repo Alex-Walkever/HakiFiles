@@ -37,6 +37,12 @@ public class CardsController {
         if (requestParam.containsKey("category")) {
             Set<String> cardsId = new HashSet<>();
             List<String> category = new ArrayList<>(Arrays.stream(requestParam.get("category").split(",")).toList());
+            if (category.contains("LEADER")) {
+                List<LeaderCard> leadersCardsByFilter = leaderCardService.getCharactersCardsByFilter(requestParam);
+                for (LeaderCard lcf : leadersCardsByFilter) {
+                    cardsId.add(lcf.getCardId());
+                }
+            }
             if (category.contains("CHARACTER")) {
                 List<CharacterCard> charactersCardsByFilter = characterCardService.getCharactersCardsByFilter(requestParam);
                 for (CharacterCard ccf : charactersCardsByFilter) {

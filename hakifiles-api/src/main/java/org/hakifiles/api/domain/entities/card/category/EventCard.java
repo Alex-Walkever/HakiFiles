@@ -18,6 +18,7 @@ public class EventCard {
     @NotBlank
     private String name;
     @NotEmpty
+    @ElementCollection
     private List<String> type;
     @NotEmpty
     @Size(max = 1000)

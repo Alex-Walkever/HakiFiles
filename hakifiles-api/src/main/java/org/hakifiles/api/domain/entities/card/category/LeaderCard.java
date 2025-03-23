@@ -19,6 +19,7 @@ public class LeaderCard {
     @NotBlank
     private String name;
     @NotEmpty
+    @ElementCollection
     private List<String> type;
     @NotEmpty
     @Size(max = 1000)
@@ -28,6 +29,7 @@ public class LeaderCard {
     @NotNull
     private Integer power;
     @NotEmpty
+    @ElementCollection
     private List<CardInfo.Attribute> attribute;
 
     public String getCardId() {
