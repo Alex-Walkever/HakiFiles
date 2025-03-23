@@ -7,6 +7,8 @@ import org.hakifiles.api.domain.repositories.card.category.event.EventCardReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -29,5 +31,10 @@ public class EventCardServiceImpl implements EventCardService {
     @Override
     public void delete(String cardId) {
         repository.deleteById(cardId);
+    }
+
+    @Override
+    public List<EventCard> getEventsCardsByFilter(Map<String, String> params) {
+        return repository.customFindMethod(params);
     }
 }

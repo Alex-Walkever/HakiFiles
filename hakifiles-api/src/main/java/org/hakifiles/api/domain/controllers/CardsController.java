@@ -49,6 +49,12 @@ public class CardsController {
                     cardsId.add(ccf.getCardId());
                 }
             }
+            if (category.contains("EVENT")) {
+                List<EventCard> eventCardsByFilter = eventCardService.getEventsCardsByFilter(requestParam);
+                for (EventCard ecf : eventCardsByFilter) {
+                    cardsId.add(ecf.getCardId());
+                }
+            }
 
             return ResponseEntity.ok(cardInfoService.getCardsByListCardId(cardsId.stream().toList()));
         }
