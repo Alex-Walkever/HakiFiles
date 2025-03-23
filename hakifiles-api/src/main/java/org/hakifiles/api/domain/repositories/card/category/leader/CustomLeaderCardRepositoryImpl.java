@@ -1,10 +1,10 @@
-package org.hakifiles.api.domain.repositories.card.category.character;
+package org.hakifiles.api.domain.repositories.card.category.leader;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import org.hakifiles.api.domain.entities.CardInfo;
-import org.hakifiles.api.domain.entities.card.category.CharacterCard;
+import org.hakifiles.api.domain.entities.card.category.LeaderCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,24 +13,23 @@ import java.util.Map;
 
 import static org.hakifiles.api.infrastructure.tools.CreatePredicate.createIntPredicate;
 
-public class CustomCharacterCardRepositoryImpl implements CustomCharacterCardRepository {
-
+public class CustomLeaderCardRepositoryImpl implements CustomLeaderCardRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public List<CharacterCard> customFindMethod(Map<String, String> params) {
+    public List<LeaderCard> customFindMethod(Map<String, String> params) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<CharacterCard> cq = cb.createQuery(CharacterCard.class);
-        Root<CharacterCard> character = cq.from(CharacterCard.class);
-        cq.select(character);
+        CriteriaQuery<LeaderCard> cq = cb.createQuery(LeaderCard.class);
+        Root<LeaderCard> leader = cq.from(LeaderCard.class);
+        cq.select(leader);
 
         List<Predicate> predicates = new ArrayList<>();
 
         if (params.containsKey("name")) {
             String name = params.get("name");
             if (name != null) {
-                predicates.add(cb.like(character.get("name"), "%" + name + "%"));
+                predicates.add(cb.like(leader.get("name"), "%" + name + "%"));
             }
         }
         if (params.containsKey("type")) {
@@ -38,26 +37,20 @@ public class CustomCharacterCardRepositoryImpl implements CustomCharacterCardRep
             if (type != null) {
                 List<String> types = new ArrayList<>(Arrays.stream(type.split(",")).toList());
 
-                Join<CharacterCard, String> joinType = character.join("type");
+                Join<LeaderCard, String> joinType = leader.join("type");
                 predicates.add(cb.and(joinType.in(types)));
             }
         }
         if (params.containsKey("effects")) {
             String effects = params.get("effects");
             if (effects != null) {
-                predicates.add(cb.like(character.get("effects"), "%" + effects + "%"));
+                predicates.add(cb.like(leader.get("effects"), "%" + effects + "%"));
             }
         }
-        if (params.containsKey("triggerEffect")) {
-            String triggerEffect = params.get("triggerEffect");
-            if (triggerEffect != null) {
-                predicates.add(cb.like(character.get("triggerEffect"), "%" + triggerEffect + "%"));
-            }
-        }
-        if (params.containsKey("cost")) {
-            String costString = params.get("cost");
+        if (params.containsKey("life")) {
+            String costString = params.get("life");
             if (costString != null) {
-                Predicate predicate = createIntPredicate("cost", costString, cb, character);
+                Predicate predicate = createIntPredicate("life", costString, cb, leader);
                 if (predicate != null) {
                     predicates.add(predicate);
                 }
@@ -66,16 +59,7 @@ public class CustomCharacterCardRepositoryImpl implements CustomCharacterCardRep
         if (params.containsKey("power")) {
             String powerString = params.get("power");
             if (powerString != null) {
-                Predicate predicate = createIntPredicate("power", powerString, cb, character);
-                if (predicate != null) {
-                    predicates.add(predicate);
-                }
-            }
-        }
-        if (params.containsKey("counterPower")) {
-            String counterPowerString = params.get("counterPower");
-            if (counterPowerString != null) {
-                Predicate predicate = createIntPredicate("counterPower", counterPowerString, cb, character);
+                Predicate predicate = createIntPredicate("power", powerString, cb, leader);
                 if (predicate != null) {
                     predicates.add(predicate);
                 }
@@ -89,7 +73,7 @@ public class CustomCharacterCardRepositoryImpl implements CustomCharacterCardRep
                 for (String as : attributesString) {
                     attributes.add(CardInfo.Attribute.valueOf(as));
                 }
-                Join<CharacterCard, CardInfo.Attribute> joinType = character.join("attribute");
+                Join<LeaderCard, CardInfo.Attribute> joinType = leader.join("attribute");
                 predicates.add(cb.and(joinType.in(attributes)));
             }
         }
