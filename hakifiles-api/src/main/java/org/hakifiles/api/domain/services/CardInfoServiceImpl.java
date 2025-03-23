@@ -50,6 +50,14 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
+    public CardInfo editCard(CardDto info, CardInfo cardInfo) {
+        CardInfo newCardInfo = CardMapper.toCardInfo(info);
+        newCardInfo.setId(cardInfo.getId());
+        repository.save(newCardInfo);
+        return newCardInfo;
+    }
+
+    @Override
     public void deleteCard(Long id) {
         repository.deleteById(id);
     }

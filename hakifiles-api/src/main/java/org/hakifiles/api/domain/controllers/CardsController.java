@@ -112,6 +112,34 @@ public class CardsController {
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{cardId}")
+    public ResponseEntity<CardInfo> editCard(@RequestBody CardDto cardDto, @PathVariable String cardId) {
+        Optional<CardInfo> cardInfo = cardInfoService.getCardByCardId(cardId);
+        if (cardInfo.isPresent()) {
+            boolean safeToModify = false;
+            if (cardDto.category.equals(CardInfo.Category.LEADER.toString())) {
+                LeaderCard leaderCard = leaderCardService.saveCard(cardDto);
+                safeToModify = true;
+            }
+            if (cardDto.category.equals(CardInfo.Category.CHARACTER.toString())) {
+                CharacterCard characterCard = characterCardService.saveCard(cardDto);
+                safeToModify = true;
+            }
+            if (cardDto.category.equals(CardInfo.Category.STAGE.toString())) {
+                StageCard stageCard = stageCardService.saveCard(cardDto);
+                safeToModify = true;
+            }
+            if (cardDto.category.equals(CardInfo.Category.EVENT.toString())) {
+                EventCard eventCard = eventCardService.saveCard(cardDto);
+                safeToModify = true;
+            }
+            if (safeToModify) {
+                return ResponseEntity.ok(cardInfoService.editCard(cardDto, cardInfo.get()));
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping("")
     public ResponseEntity<?> addMultipleCards(@RequestBody List<CardDto> cardDto) {
         for (CardDto dto : cardDto) {
@@ -119,23 +147,18 @@ public class CardsController {
             if (dto.category.equals(CardInfo.Category.LEADER.toString())) {
                 LeaderCard leaderCard = leaderCardService.saveCard(dto);
                 safeToAdd = true;
-                System.out.println(leaderCard.toString());
             } else if (dto.category.equals(CardInfo.Category.CHARACTER.toString())) {
                 CharacterCard characterCard = characterCardService.saveCard(dto);
                 safeToAdd = true;
-                System.out.println(characterCard.toString());
             } else if (dto.category.equals(CardInfo.Category.STAGE.toString())) {
                 StageCard stageCard = stageCardService.saveCard(dto);
                 safeToAdd = true;
-                System.out.println(stageCard.toString());
             } else if (dto.category.equals(CardInfo.Category.EVENT.toString())) {
                 EventCard eventCard = eventCardService.saveCard(dto);
                 safeToAdd = true;
-                System.out.println(eventCard.toString());
             }
             if (safeToAdd) {
                 CardInfo info = cardInfoService.saveCard(dto);
-                System.out.println(info.toString());
             }
         }
         return ResponseEntity.ok().build();

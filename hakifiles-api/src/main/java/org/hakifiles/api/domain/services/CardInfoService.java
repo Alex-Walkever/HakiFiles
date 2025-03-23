@@ -20,6 +20,8 @@ public interface CardInfoService {
 
     CardInfo saveCard(CardDto info);
 
+    CardInfo editCard(CardDto info, CardInfo cardInfo);
+
     void deleteCard(Long id);
 
     List<CardInfo> getCardsByListCardId(List<String> cardsId);
