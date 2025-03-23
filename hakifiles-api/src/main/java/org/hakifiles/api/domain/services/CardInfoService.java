@@ -5,6 +5,7 @@ import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CardInfoService {
@@ -22,4 +23,6 @@ public interface CardInfoService {
     void deleteCard(Long id);
 
     List<CardInfo> getCardsByListCardId(List<String> cardsId);
+
+    List<CardInfo> getCardsByFilterAndCardsId(Map<String, String> params, List<String> ids);
 }

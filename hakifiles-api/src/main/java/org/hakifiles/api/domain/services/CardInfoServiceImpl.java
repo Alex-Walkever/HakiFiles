@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -56,6 +57,15 @@ public class CardInfoServiceImpl implements CardInfoService {
     @Override
     public List<CardInfo> getCardsByListCardId(List<String> cardsId) {
         return repository.findByCardIdIn(cardsId);
+    }
+
+    @Override
+    public List<CardInfo> getCardsByFilterAndCardsId(Map<String, String> params, List<String> ids) {
+        List<CardInfo> cardInfos = repository.customFindMethod(params, ids);
+        if (cardInfos == null) {
+            cardInfos = repository.findByCardIdIn(ids);
+        }
+        return cardInfos;
     }
 
 }

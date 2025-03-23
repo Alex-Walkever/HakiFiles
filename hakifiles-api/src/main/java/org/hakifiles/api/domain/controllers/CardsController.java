@@ -62,7 +62,7 @@ public class CardsController {
                 }
             }
 
-            return ResponseEntity.ok(cardInfoService.getCardsByListCardId(cardsId.stream().toList()));
+            return ResponseEntity.ok(cardInfoService.getCardsByFilterAndCardsId(requestParam, cardsId.stream().toList()));
         }
         return ResponseEntity.notFound().build();
     }
