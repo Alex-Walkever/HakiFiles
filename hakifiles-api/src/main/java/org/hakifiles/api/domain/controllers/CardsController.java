@@ -55,6 +55,12 @@ public class CardsController {
                     cardsId.add(ecf.getCardId());
                 }
             }
+            if (category.contains("STAGE")) {
+                List<StageCard> stageCardsByFilter = stageCardService.getStagesCardsByFilter(requestParam);
+                for (StageCard scf : stageCardsByFilter) {
+                    cardsId.add(scf.getCardId());
+                }
+            }
 
             return ResponseEntity.ok(cardInfoService.getCardsByListCardId(cardsId.stream().toList()));
         }
