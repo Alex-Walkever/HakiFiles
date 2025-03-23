@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface CardInfoRepository extends JpaRepository<CardInfo, Long> {
+public interface CardInfoRepository extends JpaRepository<CardInfo, Long>, CustomCardInfoRepository {
     @Transactional(readOnly = true)
     List<CardInfo> findByCategory(CardInfo.Category category, Pageable pageable);
 

@@ -26,6 +26,7 @@ public class CardMapper {
         }
         info.setProduct(cardDto.product);
         info.setProductCode(cardDto.productCode);
+        info.setSeries(CardInfo.Series.valueOf(cardDto.productCode.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)")[0]));
         String rarity = cardDto.rarity;
         if (rarity.contains(" ")) {
             rarity = rarity.replace(" ", "_");

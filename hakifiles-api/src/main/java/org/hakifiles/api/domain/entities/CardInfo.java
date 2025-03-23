@@ -27,6 +27,8 @@ public class CardInfo {
     @NotBlank
     private String productCode;
     @NotNull
+    private Series series;
+    @NotNull
     private Rarity rarity;
     @NotEmpty
     @ElementCollection
@@ -40,7 +42,8 @@ public class CardInfo {
 
     public static enum TournamentStatus {
         LEGAL,
-        BANNED
+        BANNED,
+        UNRELEASED
     }
 
     public static enum Rarity {
@@ -74,6 +77,14 @@ public class CardInfo {
         RANGED,
         SPECIAL,
         WISDOM
+    }
+
+    public static enum Series {
+        OP,
+        ST,
+        EB,
+        PRB,
+        P
     }
 
     public Long getId() {
@@ -162,6 +173,14 @@ public class CardInfo {
 
     public void setTournamentStatus(TournamentStatus tournamentStatus) {
         this.tournamentStatus = tournamentStatus;
+    }
+
+    public Series getSeries() {
+        return series;
+    }
+
+    public void setSeries(Series series) {
+        this.series = series;
     }
 
     @Override
