@@ -29,12 +29,27 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @ElementCollection
     private List<Long> deckList;
 
 //    @ElementCollection
 //    private List<CollectionObject> collection;
 
-    private List<String> rol;
+    private String roles;
+
+    public User() {
+
+    }
+
+    public User(String name,
+                String password,
+                String email,
+                String roles) {
+        this.roles = roles;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
@@ -100,12 +115,13 @@ public class User {
 //        this.collection.remove(cardId);
 //    }
 
-    public List<String> getRol() {
-        return rol;
+
+    public String getRoles() {
+        return roles;
     }
 
-    public void setRol(List<String> rol) {
-        this.rol = rol;
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 
     public void setUser(User user) {
@@ -114,6 +130,6 @@ public class User {
         email = user.email;
         deckList = user.deckList;
         //collection = user.collection;
-        rol = user.rol;
+        roles = user.roles;
     }
 }

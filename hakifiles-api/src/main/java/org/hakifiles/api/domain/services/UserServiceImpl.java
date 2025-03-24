@@ -1,10 +1,14 @@
 package org.hakifiles.api.domain.services;
 
 import org.hakifiles.api.domain.dto.PaginationDto;
+import org.hakifiles.api.domain.entities.SecurityUser;
 import org.hakifiles.api.domain.entities.User;
 import org.hakifiles.api.domain.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -35,5 +39,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         return repository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return repository
+                .findByName(username)
+                .map(SecurityUser::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }
 }

@@ -14,6 +14,7 @@ import org.hakifiles.api.domain.services.card.category.LeaderCardService;
 import org.hakifiles.api.domain.services.card.category.StageCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -73,6 +74,7 @@ public class CardsController {
     }
 
     @GetMapping("/category")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<CardInfo>> getCardsByCategory(@RequestBody PaginationDto paginationDto, @RequestParam CardInfo.Category category) {
         return ResponseEntity.ok(cardInfoService.getCardsByCategory(paginationDto, category));
     }
