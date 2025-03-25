@@ -110,6 +110,16 @@ public class User {
         this.authorities.add(authority);
     }
 
+    public boolean removeAuthority(String authority) {
+        for (Role r : this.authorities) {
+            if (r.getAuthority().equals(authority)) {
+                this.authorities.remove(r);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setUserDto(UserDto userDto, PasswordEncoder encoder) {
         if (userDto.getName() != null && !userDto.getName().isEmpty()) {
             name = userDto.getName();

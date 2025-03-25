@@ -49,4 +49,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new LoginResponseDto(null, "");
         }
     }
+
+    @Override
+    public boolean hasUserId(Long userId) {
+        Optional<User> byId = userRepository.findById(userId);
+        return byId.isPresent();
+    }
 }

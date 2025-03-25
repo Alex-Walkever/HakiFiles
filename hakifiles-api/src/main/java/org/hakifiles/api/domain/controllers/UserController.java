@@ -3,7 +3,9 @@ package org.hakifiles.api.domain.controllers;
 import jakarta.validation.Valid;
 import org.hakifiles.api.domain.dto.LoginResponseDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
+import org.hakifiles.api.domain.dto.ResponseGetUserDTO;
 import org.hakifiles.api.domain.dto.UserDto;
+import org.hakifiles.api.domain.entities.Role;
 import org.hakifiles.api.domain.entities.User;
 import org.hakifiles.api.domain.services.AuthenticationService;
 import org.hakifiles.api.domain.services.UserService;
@@ -30,9 +32,18 @@ public class UserController {
     @Autowired
     private PasswordEncoder encoder;
 
+    public AuthenticationService getAuthenticationService() {
+        return authenticationService;
+    }
+
     @GetMapping()
-    public ResponseEntity<List<User>> getUsers(@RequestBody PaginationDto pagination) {
-        return ResponseEntity.ok(userService.getUserPerPage(pagination));
+    public ResponseEntity<List<ResponseGetUserDTO>> getUsers(@RequestBody PaginationDto pagination) {
+        List<ResponseGetUserDTO> response = new ArrayList<>();
+        List<User> userPerPage = userService.getUserPerPage(pagination);
+        for (User u : userPerPage) {
+            response.add(new ResponseGetUserDTO(u));
+        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
@@ -58,8 +69,37 @@ public class UserController {
         return ResponseEntity.ok(authenticationService.loginUser(userDto));
     }
 
-    @PutMapping("/edit/{id}")
+    @PostMapping("/roles/add/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addAuthorityToUser(@RequestBody String authority, @PathVariable Long id) {
+        Optional<User> userById = userService.getUserById(id);
+        if (userById.isPresent()) {
+            Optional<Role> byAuthority = userService.getByAuthority(authority);
+            if (byAuthority.isPresent()) {
+                User user = userById.get();
+                user.addAuthority(byAuthority.get());
+                userService.editUser(user);
+                return ResponseEntity.noContent().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/roles/remove/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> removeAuthorityToUser(@RequestBody String authority, @PathVariable Long id) {
+        Optional<User> userById = userService.getUserById(id);
+        if (userById.isPresent()) {
+            User user = userById.get();
+            user.removeAuthority(authority);
+            userService.editUser(user);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/edit/{id}")
+    @PreAuthorize("this.getAuthenticationService().hasUserId( #id ) or hasRole('ADMIN')")
     public ResponseEntity<?> edit(@Valid @RequestBody UserDto userDto, BindingResult result, @PathVariable Long id) {
         if (result.hasErrors()) {
             return Errors.validate(result);
@@ -75,7 +115,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("this.getAuthenticationService().hasUserId( #id ) or hasRole('ADMIN')")
     public ResponseEntity<?> remove(@PathVariable Long id) {
         Optional<User> u = userService.getUserById(id);
         if (u.isPresent()) {

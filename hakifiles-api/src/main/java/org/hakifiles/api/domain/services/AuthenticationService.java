@@ -6,4 +6,6 @@ import org.springframework.security.core.AuthenticationException;
 
 public interface AuthenticationService {
     LoginResponseDto loginUser(UserDto userDto) throws AuthenticationException;
+
+    boolean hasUserId(Long userId);
 }
