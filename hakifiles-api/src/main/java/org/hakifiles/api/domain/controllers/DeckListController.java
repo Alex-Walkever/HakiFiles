@@ -7,6 +7,7 @@ import org.hakifiles.api.domain.services.UserService;
 import org.hakifiles.api.infrastructure.tools.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ public class DeckListController {
     UserService userService;
 
     @PostMapping()
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<?> createDeck(@Valid @RequestBody DeckList list, BindingResult result) {
         if (result.hasErrors()) {
             return Errors.validate(result);

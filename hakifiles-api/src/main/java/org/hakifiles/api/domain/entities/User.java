@@ -4,18 +4,20 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import org.hakifiles.api.infrastructure.tools.CollectionObject;
+import org.hakifiles.api.domain.dto.UserDto;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long id;
+    @Column(nullable = false, name = "user_id")
+    private Long userId;
 
     @NotEmpty
     @Column(unique = true)
@@ -30,33 +32,38 @@ public class User {
     private String email;
 
     @ElementCollection
-    private List<Long> deckList;
+    private Set<Long> deckList;
 
-//    @ElementCollection
+    //    @ElementCollection
 //    private List<CollectionObject> collection;
-
-    private String roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role_junction",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")}
+    )
+    private Set<Role> authorities;
 
     public User() {
-
+        super();
+        this.authorities = new HashSet<>();
+        this.deckList = new HashSet<>();
     }
 
-    public User(String name,
-                String password,
-                String email,
-                String roles) {
-        this.roles = roles;
-        this.email = email;
-        this.password = password;
+    public User(String name, String password, String email, Set<Long> deckList, Set<Role> authorities) {
         this.name = name;
+        this.password = password;
+        this.email = email;
+        this.deckList = deckList;
+        this.authorities = authorities;
     }
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -83,53 +90,35 @@ public class User {
         this.email = email;
     }
 
-    public List<Long> getDeckList() {
+    public Set<Long> getDeckList() {
         return deckList;
     }
 
-    public void setDeckList(List<Long> deckList) {
+    public void setDeckList(Set<Long> deckList) {
         this.deckList = deckList;
     }
 
-    public void addToDeckList(Long deckId) {
-        this.deckList.add(deckId);
+    public Set<Role> getAuthorities() {
+        return authorities;
     }
 
-    public void removeDeckList(Long deckId) {
-        this.deckList.remove(deckId);
+    public void setAuthorities(Set<Role> authorities) {
+        this.authorities = authorities;
     }
 
-//    public List<CollectionObject> getCollection() {
-//        return collection;
-//    }
-//
-//    public void setCollection(List<CollectionObject> collection) {
-//        this.collection = collection;
-//    }
-//
-//    public void addToCollection(CollectionObject collection) {
-//        this.collection.add(collection);
-//    }
-//
-//    public void removeCollection(CollectionObject cardId) {
-//        this.collection.remove(cardId);
-//    }
-
-
-    public String getRoles() {
-        return roles;
+    public void addAuthority(Role authority) {
+        this.authorities.add(authority);
     }
 
-    public void setRoles(String roles) {
-        this.roles = roles;
-    }
-
-    public void setUser(User user) {
-        name = user.name;
-        password = user.password;
-        email = user.email;
-        deckList = user.deckList;
-        //collection = user.collection;
-        roles = user.roles;
+    public void setUserDto(UserDto userDto, PasswordEncoder encoder) {
+        if (userDto.getName() != null && !userDto.getName().isEmpty()) {
+            name = userDto.getName();
+        }
+        if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+            email = userDto.getEmail();
+        }
+        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+            password = encoder.encode(userDto.getPassword());
+        }
     }
 }

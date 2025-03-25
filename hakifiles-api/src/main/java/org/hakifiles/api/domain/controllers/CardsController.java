@@ -74,7 +74,6 @@ public class CardsController {
     }
 
     @GetMapping("/category")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<CardInfo>> getCardsByCategory(@RequestBody PaginationDto paginationDto, @RequestParam CardInfo.Category category) {
         return ResponseEntity.ok(cardInfoService.getCardsByCategory(paginationDto, category));
     }
@@ -115,6 +114,7 @@ public class CardsController {
     }
 
     @PutMapping("/{cardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardInfo> editCard(@RequestBody CardDto cardDto, @PathVariable String cardId) {
         Optional<CardInfo> cardInfo = cardInfoService.getCardByCardId(cardId);
         if (cardInfo.isPresent()) {
@@ -143,6 +143,7 @@ public class CardsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addMultipleCards(@RequestBody List<CardDto> cardDto) {
         for (CardDto dto : cardDto) {
             boolean safeToAdd = false;
@@ -167,6 +168,7 @@ public class CardsController {
     }
 
     @DeleteMapping("/{cardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> removeCard(@PathVariable String cardId) {
         Optional<CardInfo> ci = cardInfoService.getCardByCardId(cardId);
         if (ci.isPresent()) {
