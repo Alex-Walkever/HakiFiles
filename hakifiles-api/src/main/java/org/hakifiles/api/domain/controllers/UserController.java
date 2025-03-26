@@ -1,90 +1,128 @@
 package org.hakifiles.api.domain.controllers;
 
 import jakarta.validation.Valid;
+import org.hakifiles.api.domain.dto.LoginResponseDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
+import org.hakifiles.api.domain.dto.ResponseGetUserDTO;
+import org.hakifiles.api.domain.dto.UserDto;
+import org.hakifiles.api.domain.entities.Role;
 import org.hakifiles.api.domain.entities.User;
+import org.hakifiles.api.domain.services.AuthenticationService;
 import org.hakifiles.api.domain.services.UserService;
+import org.hakifiles.api.infrastructure.tools.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController()
+@RequestMapping("/api/user")
 public class UserController {
     @Autowired
-    private UserService service;
+    private UserService userService;
 
-    @GetMapping("/api/user")
-    public ResponseEntity<List<User>> getUsers(@RequestBody PaginationDto pagination) {
-        return ResponseEntity.ok(service.getUserPerPage(pagination));
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private PasswordEncoder encoder;
+
+    public AuthenticationService getAuthenticationService() {
+        return authenticationService;
     }
 
-    @GetMapping("/api/user/{id}")
+    @GetMapping()
+    public ResponseEntity<List<ResponseGetUserDTO>> getUsers(@RequestBody PaginationDto pagination) {
+        List<ResponseGetUserDTO> response = new ArrayList<>();
+        List<User> userPerPage = userService.getUserPerPage(pagination);
+        for (User u : userPerPage) {
+            response.add(new ResponseGetUserDTO(u));
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<?> details(@PathVariable Long id) {
-        Optional<User> u = service.getUserById(id);
+        Optional<User> u = userService.getUserById(id);
         if (u.isPresent()) {
             return ResponseEntity.ok(u.get());
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/api/user")
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user, BindingResult result) {
+    @PostMapping("/register")
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto, BindingResult result) {
         if (result.hasErrors()) {
-            return validate(result);
+            return Errors.validate(result);
         }
 
-        List<String> rol = user.getRol();
-
-        if (rol == null) {
-            rol = new ArrayList<String>();
-        }
-        if (!rol.contains("user")) {
-            rol.add("user");
-        }
-        user.setRol(rol);
-
-        if (user.getDeckList() == null) {
-            user.setDeckList(new ArrayList<Long>());
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.saveUser(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userDto, encoder));
     }
 
-    @PutMapping("/api/user/{id}")
-    public ResponseEntity<?> edit(@Valid @RequestBody User user, BindingResult result, @PathVariable Long id) {
-        if (result.hasErrors()) {
-            return validate(result);
-        }
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> loginUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(authenticationService.loginUser(userDto));
+    }
 
-        Optional<User> u = service.getUserById(id);
-        if (u.isPresent()) {
-            User userDb = u.get();
-            userDb.setUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(service.saveUser(user));
+    @PostMapping("/roles/add/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addAuthorityToUser(@RequestBody String authority, @PathVariable Long id) {
+        Optional<User> userById = userService.getUserById(id);
+        if (userById.isPresent()) {
+            Optional<Role> byAuthority = userService.getByAuthority(authority);
+            if (byAuthority.isPresent()) {
+                User user = userById.get();
+                user.addAuthority(byAuthority.get());
+                userService.editUser(user);
+                return ResponseEntity.noContent().build();
+            }
         }
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/api/user/{id}")
-    public ResponseEntity<?> remove(@PathVariable Long id) {
-        Optional<User> u = service.getUserById(id);
-        if (u.isPresent()) {
-            service.deleteUser(id);
+    @PostMapping("/roles/remove/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> removeAuthorityToUser(@RequestBody String authority, @PathVariable Long id) {
+        Optional<User> userById = userService.getUserById(id);
+        if (userById.isPresent()) {
+            User user = userById.get();
+            user.removeAuthority(authority);
+            userService.editUser(user);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/edit/{id}")
+    @PreAuthorize("this.getAuthenticationService().hasUserId( #id ) or hasRole('ADMIN')")
+    public ResponseEntity<?> edit(@Valid @RequestBody UserDto userDto, BindingResult result, @PathVariable Long id) {
+        if (result.hasErrors()) {
+            return Errors.validate(result);
+        }
 
-    private static ResponseEntity<Map<String, String>> validate(BindingResult result) {
-        Map<String, String> errors = new HashMap<>();
-        result.getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), "The field " + err.getField() + " " + err.getDefaultMessage());
-        });
-        return ResponseEntity.badRequest().body(errors);
+        Optional<User> u = userService.getUserById(id);
+        if (u.isPresent()) {
+            User userDb = u.get();
+            userDb.setUserDto(userDto, encoder);
+            return ResponseEntity.status(HttpStatus.CREATED).body(userService.editUser(userDb));
+        }
+        return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("this.getAuthenticationService().hasUserId( #id ) or hasRole('ADMIN')")
+    public ResponseEntity<?> remove(@PathVariable Long id) {
+        Optional<User> u = userService.getUserById(id);
+        if (u.isPresent()) {
+            userService.deleteUser(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }

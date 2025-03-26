@@ -14,6 +14,7 @@ import org.hakifiles.api.domain.services.card.category.LeaderCardService;
 import org.hakifiles.api.domain.services.card.category.StageCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -113,6 +114,7 @@ public class CardsController {
     }
 
     @PutMapping("/{cardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardInfo> editCard(@RequestBody CardDto cardDto, @PathVariable String cardId) {
         Optional<CardInfo> cardInfo = cardInfoService.getCardByCardId(cardId);
         if (cardInfo.isPresent()) {
@@ -141,6 +143,7 @@ public class CardsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addMultipleCards(@RequestBody List<CardDto> cardDto) {
         for (CardDto dto : cardDto) {
             boolean safeToAdd = false;
@@ -165,6 +168,7 @@ public class CardsController {
     }
 
     @DeleteMapping("/{cardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> removeCard(@PathVariable String cardId) {
         Optional<CardInfo> ci = cardInfoService.getCardByCardId(cardId);
         if (ci.isPresent()) {
