@@ -21,6 +21,9 @@ public class DeckListDto {
     @NotNull
     private Long userId;
 
+    @NotNull
+    private boolean isPrivate;
+
     public String getName() {
         return name;
     }
@@ -59,5 +62,13 @@ public class DeckListDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 }

@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.services;
 import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
+import org.hakifiles.api.domain.entities.DeckList;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,10 @@ public interface CardInfoService {
     CardInfo saveCard(CardDto info);
 
     CardInfo editCard(CardDto info, CardInfo cardInfo);
+
+    CardInfo editCard(CardInfo cardInfo);
+
+    void removeUsage(DeckList deckList);
 
     void deleteCard(Long id);
 

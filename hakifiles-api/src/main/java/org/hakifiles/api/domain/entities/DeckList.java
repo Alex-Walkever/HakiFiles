@@ -2,7 +2,6 @@ package org.hakifiles.api.domain.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hakifiles.api.domain.dto.DeckListDto;
@@ -15,9 +14,8 @@ import java.util.Map;
 @Table(name = "Decks")
 public class DeckList {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long id;
+    private String id;
 
     @NotBlank
     private String name;
@@ -40,6 +38,9 @@ public class DeckList {
     @NotNull
     private Long userId;
 
+    @NotNull
+    private Boolean isPrivate;
+
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
 
@@ -58,6 +59,7 @@ public class DeckList {
         userId = dto.getUserId();
         list = new HashMap<>();
         publishedOn = LocalDateTime.now();
+        isPrivate = dto.isPrivate();
     }
 
     public Long getUserId() {
@@ -68,11 +70,11 @@ public class DeckList {
         this.userId = userId;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -104,6 +106,20 @@ public class DeckList {
         return list;
     }
 
+    public void addOrRemoveToList(String card, Integer amount) {
+        Integer value = amount;
+        if (list.containsKey(card)) {
+            value += list.get(card);
+            if (value > 0) {
+                list.put(card, value);
+            } else {
+                list.remove(card);
+            }
+            return;
+        }
+        list.put(card, value);
+    }
+
     public void setList(Map<String, Integer> list) {
         this.list = list;
     }
@@ -130,6 +146,14 @@ public class DeckList {
 
     public void setUpdatedOn(LocalDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public Boolean getPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     @Override

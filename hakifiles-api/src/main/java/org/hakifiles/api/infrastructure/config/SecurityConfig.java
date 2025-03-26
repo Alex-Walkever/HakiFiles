@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.hakifiles.api.domain.entities.SecurityUser;
 import org.hakifiles.api.domain.services.UserService;
 import org.hakifiles.api.infrastructure.utils.RSAKeyProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -90,5 +92,15 @@ public class SecurityConfig {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return converter;
+    }
+    
+    public Long getCurrentId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SecurityUser securityUser = null;
+        if (principal instanceof SecurityUser) {
+            securityUser = (SecurityUser) principal;
+        }
+
+        return securityUser != null ? securityUser.getId() : 0;
     }
 }

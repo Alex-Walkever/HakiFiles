@@ -31,7 +31,7 @@ public class User {
     private String email;
 
     @ElementCollection
-    private Set<Long> deckList;
+    private Set<String> deckList;
 
     //    @ElementCollection
 //    private List<CollectionObject> collection;
@@ -49,7 +49,7 @@ public class User {
         this.deckList = new HashSet<>();
     }
 
-    public User(String name, String password, String email, Set<Long> deckList, Set<Role> authorities) {
+    public User(String name, String password, String email, Set<String> deckList, Set<Role> authorities) {
         this.name = name;
         this.password = password;
         this.email = email;
@@ -89,16 +89,20 @@ public class User {
         this.email = email;
     }
 
-    public Set<Long> getDeckList() {
+    public Set<String> getDeckList() {
         return deckList;
     }
 
-    public void setDeckList(Set<Long> deckList) {
+    public void setDeckList(Set<String> deckList) {
         this.deckList = deckList;
     }
 
-    public void addDekList(Long deckList) {
+    public void addDeckList(String deckList) {
         this.deckList.add(deckList);
+    }
+
+    public void removeDeckList(String deckList) {
+        this.deckList.remove(deckList);
     }
 
     public Set<Role> getAuthorities() {

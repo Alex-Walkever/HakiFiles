@@ -5,6 +5,8 @@ import org.hakifiles.api.domain.repositories.DeckListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DeckListServiceImpl implements DeckListService {
     @Autowired
@@ -13,5 +15,15 @@ public class DeckListServiceImpl implements DeckListService {
     @Override
     public DeckList saveDeckList(DeckList deckList) {
         return repository.save(deckList);
+    }
+
+    @Override
+    public Optional<DeckList> getDeckListById(String id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public void removeDeckList(String id) {
+        repository.deleteById(id);
     }
 }

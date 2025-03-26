@@ -1,8 +1,10 @@
 package org.hakifiles.api.domain.services;
 
+import ch.qos.logback.core.joran.sanity.Pair;
 import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
+import org.hakifiles.api.domain.entities.DeckList;
 import org.hakifiles.api.domain.mappers.CardMapper;
 import org.hakifiles.api.domain.repositories.card.category.cardinfo.CardInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,27 @@ public class CardInfoServiceImpl implements CardInfoService {
         newCardInfo.setId(cardInfo.getId());
         repository.save(newCardInfo);
         return newCardInfo;
+    }
+
+    @Override
+    public CardInfo editCard(CardInfo cardInfo) {
+        return repository.save(cardInfo);
+    }
+
+    @Override
+    public void removeUsage(DeckList deckList) {
+        CardInfo leader = deckList.getLeader();
+        leader.removeCardUsage(1L);
+        repository.save(leader);
+        Map<String, Integer> list = deckList.getList();
+        for (Map.Entry<String, Integer> pair : list.entrySet()) {
+            Optional<CardInfo> byCardId = repository.findByCardId(pair.getKey());
+            if (byCardId.isPresent()) {
+                CardInfo cardInfo = byCardId.get();
+                cardInfo.removeCardUsage(pair.getValue().longValue());
+                repository.save(cardInfo);
+            }
+        }
     }
 
     @Override

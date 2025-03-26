@@ -8,4 +8,6 @@ public interface AuthenticationService {
     LoginResponseDto loginUser(UserDto userDto) throws AuthenticationException;
 
     boolean hasUserId(Long userId);
+
+    boolean hasUserFromDeckList(String deckListId);
 }

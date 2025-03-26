@@ -12,7 +12,7 @@ public class ResponseGetUserDTO {
 
     private String email;
 
-    private Set<Long> deckList;
+    private Set<String> deckList;
 
     public ResponseGetUserDTO(User user) {
         userId = user.getUserId();
@@ -45,11 +45,11 @@ public class ResponseGetUserDTO {
         this.email = email;
     }
 
-    public Set<Long> getDeckList() {
+    public Set<String> getDeckList() {
         return deckList;
     }
 
-    public void setDeckList(Set<Long> deckList) {
+    public void setDeckList(Set<String> deckList) {
         this.deckList = deckList;
     }
 }
