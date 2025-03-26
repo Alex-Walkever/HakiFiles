@@ -8,7 +8,6 @@ import org.hakifiles.api.domain.dto.UserDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -98,6 +97,10 @@ public class User {
         this.deckList = deckList;
     }
 
+    public void addDekList(Long deckList) {
+        this.deckList.add(deckList);
+    }
+
     public Set<Role> getAuthorities() {
         return authorities;
     }
@@ -110,14 +113,13 @@ public class User {
         this.authorities.add(authority);
     }
 
-    public boolean removeAuthority(String authority) {
+    public void removeAuthority(String authority) {
         for (Role r : this.authorities) {
             if (r.getAuthority().equals(authority)) {
                 this.authorities.remove(r);
-                return true;
+                return;
             }
         }
-        return false;
     }
 
     public void setUserDto(UserDto userDto, PasswordEncoder encoder) {

@@ -15,9 +15,49 @@ public class DeckListDto {
 
     private String youtubeLink;
 
-    @NotNull
-    private CardInfo leader;
+    @NotBlank
+    private String leader;
 
     @NotNull
     private Long userId;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getYoutubeLink() {
+        return youtubeLink;
+    }
+
+    public void setYoutubeLink(String youtubeLink) {
+        this.youtubeLink = youtubeLink;
+    }
+
+    public String getLeader() {
+        return leader;
+    }
+
+    public void setLeader(String leader) {
+        this.leader = leader;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

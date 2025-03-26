@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hakifiles.api.domain.dto.DeckListDto;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -36,18 +37,35 @@ public class DeckList {
     @NotNull
     private CardInfo leader;
 
+    @NotNull
+    private Long userId;
+
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
 
     public DeckList() {
+
     }
 
-    public DeckList(String name, String description, String youtubeLink, CardInfo leader) {
-        this.name = name;
-        this.description = description;
-        this.youtubeLink = youtubeLink;
-        this.leader = leader;
-        this.publishedOn = LocalDateTime.now();
+    public DeckList(DeckListDto dto) {
+        setDeckListFromDto(dto);
+    }
+
+    public void setDeckListFromDto(DeckListDto dto) {
+        name = dto.getName();
+        description = (dto.getDescription() != null) ? dto.getDescription() : "";
+        youtubeLink = (dto.getYoutubeLink() != null) ? dto.getYoutubeLink() : "";
+        userId = dto.getUserId();
+        list = new HashMap<>();
+        publishedOn = LocalDateTime.now();
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Long getId() {
