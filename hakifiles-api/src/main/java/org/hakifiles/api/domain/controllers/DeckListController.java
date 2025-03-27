@@ -3,6 +3,7 @@ package org.hakifiles.api.domain.controllers;
 import jakarta.validation.Valid;
 import org.hakifiles.api.domain.dto.AddCardDto;
 import org.hakifiles.api.domain.dto.DeckListDto;
+import org.hakifiles.api.domain.dto.GamesDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 import org.hakifiles.api.domain.entities.DeckList;
 import org.hakifiles.api.domain.entities.User;
@@ -11,6 +12,7 @@ import org.hakifiles.api.domain.services.CardInfoService;
 import org.hakifiles.api.domain.services.DeckListService;
 import org.hakifiles.api.domain.services.UserService;
 import org.hakifiles.api.infrastructure.tools.Errors;
+import org.hakifiles.api.infrastructure.utils.Games;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +79,40 @@ public class DeckListController {
     public ResponseEntity<DeckList> deckDetails(@PathVariable String id) {
         Optional<DeckList> deckListById = deckListService.getDeckListById(id);
         return deckListById.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/games/{id}")
+    @PreAuthorize("this.getAuthenticationService().hasUserFromDeckList( #id ) or hasRole('ADMIN')")
+    public ResponseEntity<?> addWinToDeckList(@Valid @RequestBody GamesDto gameDto, BindingResult result, @PathVariable String id) {
+        if (result.hasErrors()) {
+            return Errors.validate(result);
+        }
+
+        if (gameDto.getGames() == null && gameDto.getLooses() == null && gameDto.getWins() == null)
+            return ResponseEntity.badRequest().build();
+
+        if (gameDto.getLooses() == null && gameDto.getWins() == null) return ResponseEntity.badRequest().build();
+
+        Optional<CardInfo> cardByCardId = cardInfoService.getCardByCardId(gameDto.getLeaderId());
+        if (cardByCardId.isPresent()) {
+            CardInfo card = cardByCardId.get();
+            if (!card.getCategory().equals(CardInfo.Category.LEADER)) {
+                return ResponseEntity.badRequest().build();
+            }
+            Optional<DeckList> deckListById = deckListService.getDeckListById(id);
+            if (deckListById.isPresent()) {
+                DeckList deckList = deckListById.get();
+                Games game = new Games(
+                        (gameDto.getGames() != null) ? gameDto.getGames() : 1,
+                        (gameDto.getWins() != null) ? gameDto.getWins() : 0,
+                        (gameDto.getLooses() != null) ? gameDto.getLooses() : 0,
+                        gameDto.getLeaderId());
+                deckList.addGame(game);
+                return ResponseEntity.ok(deckListService.saveDeckList(deckList));
+            }
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
 

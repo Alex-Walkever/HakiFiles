@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hakifiles.api.domain.dto.DeckListDto;
+import org.hakifiles.api.infrastructure.utils.Games;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(name = "Decks")
@@ -41,6 +41,10 @@ public class DeckList {
     @NotNull
     private Boolean isPrivate;
 
+    @ElementCollection
+    @CollectionTable(name = "games_attributes", joinColumns = @JoinColumn(name = "games_id"))
+    private Set<Games> games;
+
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
 
@@ -58,6 +62,7 @@ public class DeckList {
         youtubeLink = (dto.getYoutubeLink() != null) ? dto.getYoutubeLink() : "";
         userId = dto.getUserId();
         list = new HashMap<>();
+        games = new HashSet<>();
         publishedOn = LocalDateTime.now();
         isPrivate = dto.isPrivate();
     }
@@ -154,6 +159,30 @@ public class DeckList {
 
     public void setPrivate(Boolean aPrivate) {
         isPrivate = aPrivate;
+    }
+
+    public Set<Games> getGames() {
+        return games;
+    }
+
+    public void addGame(Games game) {
+        for (Games g : this.games) {
+            if (g.getLeaderId().equals(game.getLeaderId())) {
+                Games addGame = new Games(
+                        g.getGames() + game.getGames(),
+                        g.getWins() + game.getWins(),
+                        g.getLooses() + game.getLooses(),
+                        g.getLeaderId());
+                this.games.remove(g);
+                this.games.add(addGame);
+                return;
+            }
+        }
+        this.games.add(game);
+    }
+
+    public void setGames(Set<Games> games) {
+        this.games = games;
     }
 
     @Override
