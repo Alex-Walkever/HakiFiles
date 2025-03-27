@@ -46,7 +46,7 @@ public class DeckListController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') and this.getAuthenticationService().hasUserId( #list.getUserId() )")
     public ResponseEntity<?> createDeck(@Valid @RequestBody DeckListDto list, BindingResult result) {
         if (result.hasErrors()) {
             return Errors.validate(result);
@@ -83,7 +83,7 @@ public class DeckListController {
 
     @PutMapping("/games/{id}")
     @PreAuthorize("this.getAuthenticationService().hasUserFromDeckList( #id ) or hasRole('ADMIN')")
-    public ResponseEntity<?> addWinToDeckList(@Valid @RequestBody GamesDto gameDto, BindingResult result, @PathVariable String id) {
+    public ResponseEntity<?> addGameToDeckList(@Valid @RequestBody GamesDto gameDto, BindingResult result, @PathVariable String id) {
         if (result.hasErrors()) {
             return Errors.validate(result);
         }
