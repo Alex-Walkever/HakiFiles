@@ -40,6 +40,8 @@ public class CardInfo {
     @NotNull
     private TournamentStatus tournamentStatus;
 
+    private Long cardUsage = 0L;
+
     public static enum TournamentStatus {
         LEGAL,
         BANNED,
@@ -181,6 +183,26 @@ public class CardInfo {
 
     public void setSeries(Series series) {
         this.series = series;
+    }
+
+    public Long getCardUsage() {
+        return cardUsage;
+    }
+
+    public void addCardUsage(Long use) {
+        cardUsage += use;
+        if (cardUsage < 0L)
+            cardUsage = 0L;
+    }
+
+    public void removeCardUsage(Long use) {
+        cardUsage -= use;
+        if (cardUsage < 0L)
+            cardUsage = 0L;
+    }
+
+    public void setCardUsage(Long cardUsage) {
+        this.cardUsage = cardUsage;
     }
 
     @Override

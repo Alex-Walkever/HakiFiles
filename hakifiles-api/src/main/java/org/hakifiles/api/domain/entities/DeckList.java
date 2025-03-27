@@ -2,22 +2,20 @@ package org.hakifiles.api.domain.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hakifiles.api.domain.dto.DeckListDto;
+import org.hakifiles.api.infrastructure.utils.Games;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(name = "Decks")
 public class DeckList {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long id;
+    private String id;
 
     @NotBlank
     private String name;
@@ -40,6 +38,13 @@ public class DeckList {
     @NotNull
     private Long userId;
 
+    @NotNull
+    private Boolean isPrivate;
+
+    @ElementCollection
+    @CollectionTable(name = "games_attributes", joinColumns = @JoinColumn(name = "games_id"))
+    private Set<Games> games;
+
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
 
@@ -57,7 +62,9 @@ public class DeckList {
         youtubeLink = (dto.getYoutubeLink() != null) ? dto.getYoutubeLink() : "";
         userId = dto.getUserId();
         list = new HashMap<>();
+        games = new HashSet<>();
         publishedOn = LocalDateTime.now();
+        isPrivate = dto.isPrivate();
     }
 
     public Long getUserId() {
@@ -68,11 +75,11 @@ public class DeckList {
         this.userId = userId;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -104,6 +111,20 @@ public class DeckList {
         return list;
     }
 
+    public void addOrRemoveToList(String card, Integer amount) {
+        Integer value = amount;
+        if (list.containsKey(card)) {
+            value += list.get(card);
+            if (value > 0) {
+                list.put(card, value);
+            } else {
+                list.remove(card);
+            }
+            return;
+        }
+        list.put(card, value);
+    }
+
     public void setList(Map<String, Integer> list) {
         this.list = list;
     }
@@ -130,6 +151,38 @@ public class DeckList {
 
     public void setUpdatedOn(LocalDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public Boolean getPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public Set<Games> getGames() {
+        return games;
+    }
+
+    public void addGame(Games game) {
+        for (Games g : this.games) {
+            if (g.getLeaderId().equals(game.getLeaderId())) {
+                Games addGame = new Games(
+                        g.getGames() + game.getGames(),
+                        g.getWins() + game.getWins(),
+                        g.getLooses() + game.getLooses(),
+                        g.getLeaderId());
+                this.games.remove(g);
+                this.games.add(addGame);
+                return;
+            }
+        }
+        this.games.add(game);
+    }
+
+    public void setGames(Set<Games> games) {
+        this.games = games;
     }
 
     @Override
