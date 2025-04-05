@@ -54,7 +54,8 @@ public class CardInfo {
         RARE,
         SUPER_RARE,
         SECRET_RARE,
-        LEADER
+        LEADER,
+        PROMO
     }
 
     public static enum ColorCard {
