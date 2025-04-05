@@ -1,10 +1,11 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-// class CardsView extends StatelessWidget {
-//   const CardsView({super.key});
+class CardsView extends StatelessWidget {
+  const CardsView({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return PaginatedDataTable(columns: columns, source: source);
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    //return PaginatedDataTable(columns: columns, source: source);
+    return Container(color: Colors.lime);
+  }
+}
