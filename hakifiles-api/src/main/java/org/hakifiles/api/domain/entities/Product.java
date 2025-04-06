@@ -23,6 +23,8 @@ public class Product {
     @NotNull
     private Integer block;
 
+    private String img;
+
     public void setProduct(Product product) {
         code = product.getCode();
         name = product.getName();
@@ -77,5 +79,13 @@ public class Product {
 
     public void setBlock(Integer block) {
         this.block = block;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 }

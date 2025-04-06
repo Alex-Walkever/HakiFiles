@@ -9,7 +9,7 @@ class PublicHandlers {
   );
   static Handler cards = Handler(
     handlerFunc: (context, parameters) {
-      return CardsView();
+      return ProductsView();
     },
   );
   static Handler decks = Handler(

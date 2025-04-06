@@ -21,6 +21,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/cards")
+@CrossOrigin
 public class CardsController {
     @Autowired
     CardInfoService cardInfoService;
