@@ -28,6 +28,7 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/api/decks")
+@CrossOrigin
 public class DeckListController {
     @Autowired
     private DeckListService deckListService;

@@ -9,7 +9,16 @@ class PublicHandlers {
   );
   static Handler cards = Handler(
     handlerFunc: (context, parameters) {
-      return CardsView();
+      return ProductsView();
+    },
+  );
+  static Handler cardsByProducts = Handler(
+    handlerFunc: (context, parameters) {
+      if (parameters['product'] != null) {
+        return CardsView(product: parameters['product']!.first);
+      }
+
+      return ProductsView();
     },
   );
   static Handler decks = Handler(

@@ -8,6 +8,7 @@ class HakiRouter {
   //Public routes
   static String rootRoute = '/';
   static String cardsRoute = '/cards';
+  static String cardsByProduct = '/cards/:product';
   static String decksRoute = '/decks';
   static String stDecksRoute = '/st-decks';
   static String loginRoute = '/login';
@@ -30,6 +31,11 @@ class HakiRouter {
       transitionType: TransitionType.none,
     );
     router.define(
+      cardsByProduct,
+      handler: PublicHandlers.cardsByProducts,
+      transitionType: TransitionType.none,
+    );
+    router.define(
       decksRoute,
       handler: PublicHandlers.decks,
       transitionType: TransitionType.none,
@@ -44,6 +50,7 @@ class HakiRouter {
       handler: PublicHandlers.login,
       transitionType: TransitionType.none,
     );
+
     //404
     router.notFoundHandler = NoPageFoundHandlers.noPageFound;
   }

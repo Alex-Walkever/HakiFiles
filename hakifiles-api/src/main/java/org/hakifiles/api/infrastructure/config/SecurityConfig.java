@@ -93,7 +93,7 @@ public class SecurityConfig {
         converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return converter;
     }
-    
+
     public Long getCurrentId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         SecurityUser securityUser = null;

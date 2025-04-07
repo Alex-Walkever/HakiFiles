@@ -16,7 +16,7 @@ public interface CardInfoRepository extends JpaRepository<CardInfo, Long>, Custo
     List<CardInfo> findByBlock(Integer block, Pageable pageable);
 
     @Transactional(readOnly = true)
-    List<CardInfo> findByProduct(String product, Pageable pageable);
+    List<CardInfo> findByProduct(String product);
 
     @Transactional(readOnly = true)
     Optional<CardInfo> findByCardId(String cardId);

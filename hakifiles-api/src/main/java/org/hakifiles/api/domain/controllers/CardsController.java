@@ -21,6 +21,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/cards")
+@CrossOrigin
 public class CardsController {
     @Autowired
     CardInfoService cardInfoService;
@@ -69,8 +70,8 @@ public class CardsController {
     }
 
     @GetMapping("/product")
-    public ResponseEntity<List<CardInfo>> getCardsByProduct(@RequestBody PaginationDto paginationDto, @RequestParam String product) {
-        return ResponseEntity.ok(cardInfoService.getCardsByProduct(paginationDto, product));
+    public ResponseEntity<List<CardInfo>> getCardsByProduct(@RequestParam String product) {
+        return ResponseEntity.ok(cardInfoService.getCardsByProduct(product));
     }
 
     @GetMapping("/category")

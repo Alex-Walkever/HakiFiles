@@ -17,7 +17,7 @@ public interface CardInfoService {
 
     Optional<CardInfo> getCardByCardId(String cardId);
 
-    List<CardInfo> getCardsByProduct(PaginationDto pagination, String product);
+    List<CardInfo> getCardsByProduct(String product);
 
     CardInfo saveCard(CardDto info);
 
