@@ -38,9 +38,8 @@ public class CardInfoServiceImpl implements CardInfoService {
     }
 
     @Override
-    public List<CardInfo> getCardsByProduct(PaginationDto pagination, String product) {
-        PageRequest p = PageRequest.of(pagination.getOffSet(), pagination.getLimit());
-        return repository.findByProduct(product, p);
+    public List<CardInfo> getCardsByProduct(String product) {
+        return repository.findByProduct(product);
     }
 
 

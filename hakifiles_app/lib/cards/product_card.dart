@@ -9,6 +9,8 @@ class ProductCard extends StatelessWidget {
     required this.amountOfCards,
     required this.block,
     this.img,
+    this.width,
+    this.onPressed,
   });
 
   final String name;
@@ -17,51 +19,58 @@ class ProductCard extends StatelessWidget {
   final int amountOfCards;
   final int block;
   final String? img;
+  final double? width;
+  final Function? onPressed;
 
   @override
   Widget build(BuildContext context) {
+    double imgSize = 120;
     final image =
         (img == null)
             ? Image(
               image: AssetImage('images/no-image.jpg'),
-              width: 247,
-              height: 247,
+              width: imgSize,
+              height: imgSize,
             )
             : FadeInImage.assetNetwork(
               placeholder: 'loader.gif',
               image: img!,
-              width: 247,
-              height: 247,
+              width: imgSize,
+              height: imgSize,
             );
-    return Container(
-      // color: Colors.indigo,
-      width: 400,
-      margin: EdgeInsets.all(8),
-      padding: EdgeInsets.all(8),
-      decoration: buildBoxDecoration(),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: image,
-          ),
-          SizedBox(width: 30),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
+    return InkWell(
+      onTap: () => onPressed != null ? onPressed!() : null,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 4),
+          padding: EdgeInsets.all(8),
+          width: width,
+          decoration: buildBoxDecoration(),
+          child: Row(
             children: [
-              Text(name),
-              Divider(),
-              Text(code),
-              Divider(),
-              Text("Release Date: $releaseDate"),
-              Divider(),
-              Text("Cards: ${amountOfCards.toString()}"),
-              Divider(),
-              Text("Block: ${block.toString()}"),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: image,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('$name *$code*'),
+                    Divider(),
+                    Text("Released: $releaseDate"),
+                    Divider(),
+                    Text(
+                      "Cards: ${amountOfCards.toString()}      Block: ${block.toString()}",
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

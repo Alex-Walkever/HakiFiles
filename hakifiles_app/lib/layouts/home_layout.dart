@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:hakifiles_app/shared/index.dart';
 
-class HomeLayout extends StatefulWidget {
+class HomeLayout extends StatelessWidget {
   const HomeLayout({super.key, required this.child});
 
   final Widget child;
 
   @override
-  State<HomeLayout> createState() => _HomeLayoutState();
-}
-
-class _HomeLayoutState extends State<HomeLayout> {
-  @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Column(children: [NavBar(), Expanded(child: widget.child)]),
+      appBar: AppBar(toolbarHeight: 75, flexibleSpace: NavBar()),
+      body: SafeArea(
+        child: ListView(
+          children: [
+            SizedBox(height: size.height, width: size.width, child: child),
+          ],
+        ),
+      ),
     );
   }
 }

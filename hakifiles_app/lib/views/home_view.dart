@@ -5,6 +5,10 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.blueGrey);
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      color: Colors.blueGrey,
+      child: Text('homeview'),
+    );
   }
 }

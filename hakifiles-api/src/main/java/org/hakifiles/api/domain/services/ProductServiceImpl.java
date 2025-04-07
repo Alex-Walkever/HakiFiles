@@ -15,7 +15,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getProducts() {
-        return productRepository.findAllByOrderByBlockAsc();
+        return productRepository.findAll();
     }
 
     @Override

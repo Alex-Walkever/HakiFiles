@@ -26,6 +26,7 @@ class AppState extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ProductsProvider()),
+        ChangeNotifierProvider(create: (context) => CardInfoProvider()),
       ],
       child: MyApp(),
     );
@@ -44,7 +45,10 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: HakiRouter.router.generator,
       navigatorKey: NavigationService.navigatorKey,
       builder: (context, child) {
-        return HomeLayout(child: child!);
+        if (child != null) {
+          return HomeLayout(child: child);
+        }
+        return SplashLayout();
       },
     );
   }
