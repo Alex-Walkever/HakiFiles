@@ -21,6 +21,15 @@ class PublicHandlers {
       return ProductsView();
     },
   );
+  static Handler cardsByCardId = Handler(
+    handlerFunc: (context, parameters) {
+      if (parameters['cardId'] != null) {
+        return CardView(cardId: parameters['cardId']!.first);
+      }
+
+      return ProductsView();
+    },
+  );
   static Handler decks = Handler(
     handlerFunc: (context, parameters) {
       return DecksView();

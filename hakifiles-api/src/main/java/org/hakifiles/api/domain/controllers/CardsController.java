@@ -1,6 +1,7 @@
 package org.hakifiles.api.domain.controllers;
 
 import org.hakifiles.api.domain.dto.CardDto;
+import org.hakifiles.api.domain.dto.CardInfoWithCategoryDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 import org.hakifiles.api.domain.entities.card.category.CharacterCard;
@@ -85,9 +86,27 @@ public class CardsController {
     }
 
     @GetMapping("/{cardId}")
-    public ResponseEntity<CardInfo> getCardInfoByCardId(@PathVariable String cardId) {
-        Optional<CardInfo> card = cardInfoService.getCardByCardId(cardId);
-        return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CardInfoWithCategoryDto> getCardInfoByCardId(@PathVariable String cardId) {
+        Optional<CardInfo> cardInfoDb = cardInfoService.getCardByCardId(cardId);
+        if (cardInfoDb.isPresent()) {
+            CardInfo cardInfo = cardInfoDb.get();
+            CardInfoWithCategoryDto card = new CardInfoWithCategoryDto(cardInfo);
+            if (cardInfo.getCategory().equals(CardInfo.Category.CHARACTER)) {
+                Optional<CharacterCard> characterCardDb = characterCardService.getCharacterCardByCardId(cardId);
+                characterCardDb.ifPresent(card::setCharacterCard);
+            } else if (cardInfo.getCategory().equals(CardInfo.Category.EVENT)) {
+                Optional<EventCard> eventCardDb = eventCardService.getEventCardByCardId(cardId);
+                eventCardDb.ifPresent(card::setEventCard);
+            } else if (cardInfo.getCategory().equals(CardInfo.Category.LEADER)) {
+                Optional<LeaderCard> leaderCardDb = leaderCardService.getLeaderCardByCardId(cardId);
+                leaderCardDb.ifPresent(card::setLeaderCard);
+            } else if (cardInfo.getCategory().equals(CardInfo.Category.STAGE)) {
+                Optional<StageCard> stageCardDb = stageCardService.getStageCardByCardId(cardId);
+                stageCardDb.ifPresent(card::setStageCard);
+            }
+            return ResponseEntity.ok(card);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/characters/{cardId}")
