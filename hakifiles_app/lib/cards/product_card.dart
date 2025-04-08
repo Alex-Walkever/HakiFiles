@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hakifiles_app/tools/hakifiles_functions.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -25,20 +26,8 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double imgSize = 120;
-    final image =
-        (img == null)
-            ? Image(
-              image: AssetImage('images/no-image.jpg'),
-              width: imgSize,
-              height: imgSize,
-            )
-            : FadeInImage.assetNetwork(
-              placeholder: 'loader.gif',
-              image: img!,
-              width: imgSize,
-              height: imgSize,
-            );
-    return InkWell(
+    final image = getImageWidget(img: img, width: imgSize, height: imgSize);
+    return GestureDetector(
       onTap: () => onPressed != null ? onPressed!() : null,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,

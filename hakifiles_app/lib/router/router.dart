@@ -9,6 +9,8 @@ class HakiRouter {
   static String rootRoute = '/';
   static String cardsRoute = '/cards';
   static String cardsByProduct = '/cards/:product';
+  static String cardRoute = '/card';
+  static String cardByCardId = '/card/:cardId';
   static String decksRoute = '/decks';
   static String stDecksRoute = '/st-decks';
   static String loginRoute = '/login';
@@ -33,6 +35,11 @@ class HakiRouter {
     router.define(
       cardsByProduct,
       handler: PublicHandlers.cardsByProducts,
+      transitionType: TransitionType.none,
+    );
+    router.define(
+      cardByCardId,
+      handler: PublicHandlers.cardsByCardId,
       transitionType: TransitionType.none,
     );
     router.define(
