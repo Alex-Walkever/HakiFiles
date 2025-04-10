@@ -206,6 +206,11 @@ public class CardInfo {
         this.cardUsage = cardUsage;
     }
 
+    public String createUrl() {
+        String url = productCode + "/" + cardId;
+        return (alternateArt == 0 ? url : url + "_" + alternateArt) + ".png";
+    }
+
     @Override
     public String toString() {
         return "CardInfo{" +

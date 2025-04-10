@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/router/index.dart';
 import 'package:hakifiles_app/shared/widget/index.dart';
 
@@ -7,6 +8,7 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Container(
       width: double.infinity,
       height: 75,
@@ -34,10 +36,24 @@ class NavBar extends StatelessWidget {
           SizedBox(width: 10),
           Spacer(),
           //auth
-          CustomNavigationButton(
-            title: 'Login / Register',
-            url: HakiRouter.loginRoute,
-          ),
+          if (authProvider.authStatus == AuthStatus.notAuthenticated) ...[
+            CustomNavigationButton(
+              title: 'Login / Register',
+              url: HakiRouter.loginRoute,
+            ),
+          ],
+          if (authProvider.authStatus == AuthStatus.authenticated) ...[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Welcome ${authProvider.user!.name}'),
+                OutlinedButton(
+                  onPressed: () => authProvider.logout(),
+                  child: Text('Logout'),
+                ),
+              ],
+            ),
+          ],
           SizedBox(width: 10),
           //theme change
           Container(color: Colors.cyan, height: 50, width: 50),
@@ -47,5 +63,6 @@ class NavBar extends StatelessWidget {
     );
   }
 
-  BoxDecoration buildBoxDecoration() => BoxDecoration();
+  BoxDecoration buildBoxDecoration() =>
+      BoxDecoration(color: Colors.transparent);
 }

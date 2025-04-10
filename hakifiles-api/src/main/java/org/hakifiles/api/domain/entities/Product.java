@@ -4,9 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Entity
 @Table(name = "Products")
-public class Product {
+public class Product implements Comparable<Product> {
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -87,5 +91,39 @@ public class Product {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public String createUrl() {
+        return "Thumbnail/" + code + "_" + name.replace(" ", "_") + ".png";
+    }
+
+    @Override
+    public int compareTo(Product o) {
+        Date mainProduct = null;
+        try {
+            mainProduct = getTime(releaseDate);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date otherProduct = null;
+        try {
+            otherProduct = getTime(o.getReleaseDate());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return otherProduct.compareTo(mainProduct);
+    }
+
+    private Date getTime(String strDate) throws ParseException {
+        if (strDate.equals("none")) {
+            strDate = "October 2022";
+        }
+        String[] parts = strDate.split(" ");
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM-yyyy");
+        if (parts.length == 2) {
+            return formatter.parse(parts[0] + "-" + parts[1]);
+        }
+        return formatter.parse(parts[1] + "-" + parts[2]);
     }
 }

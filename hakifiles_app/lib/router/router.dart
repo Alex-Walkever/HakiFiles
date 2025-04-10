@@ -14,6 +14,7 @@ class HakiRouter {
   static String decksRoute = '/decks';
   static String stDecksRoute = '/st-decks';
   static String loginRoute = '/login';
+  static String registerRoute = '/register';
 
   //Admin only routes
   //User only routes
@@ -55,6 +56,11 @@ class HakiRouter {
     router.define(
       loginRoute,
       handler: PublicHandlers.login,
+      transitionType: TransitionType.none,
+    );
+    router.define(
+      registerRoute,
+      handler: PublicHandlers.register,
       transitionType: TransitionType.none,
     );
 

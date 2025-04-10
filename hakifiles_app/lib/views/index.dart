@@ -6,3 +6,5 @@ export 'login_view.dart';
 export 'products_view.dart';
 export 'card_view.dart';
 export 'loading_view.dart';
+export 'auth_view.dart';
+export 'register_view.dart';

@@ -59,6 +59,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    public LoginResponseDto updateToken(Authentication authentication) {
+        Optional<User> byName = userRepository.findByName(authentication.getName());
+        if (byName.isPresent()) {
+            User user = byName.get();
+            Authentication auth = authenticationManager.authenticate(authentication);
+            String token = tokenService.generateJwt(authentication);
+            return new LoginResponseDto(user, token);
+        }
+        return new LoginResponseDto();
+    }
+
+    @Override
     public boolean hasUserId(Long userId) {
         Jwt principal = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> byId = userRepository.findById(userId);

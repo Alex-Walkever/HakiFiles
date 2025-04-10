@@ -15,7 +15,7 @@ class CardImageNavigator extends StatelessWidget {
       onTap: () => onPressed(),
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
-        child: Container(color: Colors.cyan, child: image),
+        child: Container(child: image),
       ),
     );
   }
