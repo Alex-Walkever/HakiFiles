@@ -1,5 +1,6 @@
 package org.hakifiles.api.domain.controllers;
 
+import com.google.common.io.Files;
 import org.hakifiles.api.domain.dto.CardDto;
 import org.hakifiles.api.domain.dto.CardInfoWithCategoryDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
@@ -13,11 +14,15 @@ import org.hakifiles.api.domain.services.card.category.CharacterCardService;
 import org.hakifiles.api.domain.services.card.category.EventCardService;
 import org.hakifiles.api.domain.services.card.category.LeaderCardService;
 import org.hakifiles.api.domain.services.card.category.StageCardService;
+import org.hakifiles.api.infrastructure.utils.GoogleCloudStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -34,6 +39,13 @@ public class CardsController {
     LeaderCardService leaderCardService;
     @Autowired
     StageCardService stageCardService;
+
+    final GoogleCloudStorage googleCloudStorage;
+
+    @Autowired
+    public CardsController(GoogleCloudStorage googleCloudStorage) {
+        this.googleCloudStorage = googleCloudStorage;
+    }
 
     @GetMapping("/search")
     public ResponseEntity<List<CardInfo>> getCardsByDynamicSearch(@RequestParam Map<String, String> requestParam) {
@@ -158,6 +170,19 @@ public class CardsController {
             if (safeToModify) {
                 return ResponseEntity.ok(cardInfoService.editCard(cardDto, cardInfo.get()));
             }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{cardId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addImageToCardInfo(@RequestBody MultipartFile image, @PathVariable String cardId) throws IOException {
+        Optional<CardInfo> cardByCardId = cardInfoService.getCardByCardId(cardId);
+        if (cardByCardId.isPresent()) {
+            CardInfo cardInfo = cardByCardId.get();
+            String url = googleCloudStorage.uploadImage(cardInfo.createUrl(), image.getBytes(), image.getContentType());
+            cardInfo.setImage(url);
+            return ResponseEntity.ok(cardInfoService.editCard(cardInfo));
         }
         return ResponseEntity.notFound().build();
     }

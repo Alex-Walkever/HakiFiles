@@ -19,6 +19,8 @@ public interface UserService extends UserDetailsService {
 
     Optional<User> getUserById(Long id);
 
+    Optional<User> getUserByName(String name);
+
     User saveUser(UserDto userDto, PasswordEncoder encoder);
 
     User editUser(User user);

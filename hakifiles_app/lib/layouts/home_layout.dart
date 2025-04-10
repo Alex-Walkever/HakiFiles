@@ -14,7 +14,7 @@ class HomeLayout extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            SizedBox(height: size.height, width: size.width, child: child),
+            SizedBox(height: size.height - 75, width: size.width, child: child),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:fluro/fluro.dart';
+import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/views/index.dart';
 
 class PublicHandlers {
@@ -42,7 +43,20 @@ class PublicHandlers {
   );
   static Handler login = Handler(
     handlerFunc: (context, parameters) {
-      return LoginView();
+      final authProvider = Provider.of<AuthProvider>(context!);
+      if (authProvider.authStatus == AuthStatus.notAuthenticated) {
+        return AuthView(child: LoginView());
+      }
+      return HomeView();
+    },
+  );
+  static Handler register = Handler(
+    handlerFunc: (context, parameters) {
+      final authProvider = Provider.of<AuthProvider>(context!);
+      if (authProvider.authStatus == AuthStatus.notAuthenticated) {
+        return AuthView(child: RegisterView());
+      }
+      return HomeView();
     },
   );
 }

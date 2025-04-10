@@ -1,5 +1,6 @@
 package org.hakifiles.api.domain.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.hakifiles.api.domain.dto.LoginResponseDto;
 import org.hakifiles.api.domain.dto.PaginationDto;
@@ -14,10 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @RestController()
@@ -47,7 +52,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/auth")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> isAuthenticated(@CurrentSecurityContext(expression = "authentication") Authentication authentication) {
+        return ResponseEntity.ok(userService.getUserByName(authentication.getName()));
+    }
+
+    @GetMapping("/details/{id}")
     public ResponseEntity<?> details(@PathVariable Long id) {
         Optional<User> u = userService.getUserById(id);
         if (u.isPresent()) {
@@ -66,6 +77,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @CrossOrigin
     public ResponseEntity<LoginResponseDto> loginUser(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(authenticationService.loginUser(userDto));
     }

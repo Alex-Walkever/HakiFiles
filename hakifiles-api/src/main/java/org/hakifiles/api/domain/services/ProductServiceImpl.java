@@ -5,6 +5,8 @@ import org.hakifiles.api.domain.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +17,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getProducts() {
-        return productRepository.findAll();
+        List<Product> all = productRepository.findAll();
+        Collections.sort(all);
+        return all;
     }
 
     @Override

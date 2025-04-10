@@ -41,7 +41,14 @@ class _CardViewState extends State<CardView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Spacer(),
-          Expanded(child: Container(color: Colors.green, child: imageWidget)),
+          Expanded(
+            child: Container(
+              decoration: buildBoxDecoration(
+                cardsProvider.cardInfo!.colorCards,
+              ),
+              child: imageWidget,
+            ),
+          ),
           if (cardsProvider.characterCard != null)
             Expanded(child: _CharacterBody()),
           if (cardsProvider.leaderCard != null) Expanded(child: _LeaderBody()),
@@ -52,12 +59,50 @@ class _CardViewState extends State<CardView> {
       ),
     );
   }
+
+  BoxDecoration buildBoxDecoration(List<String> colors) =>
+      BoxDecoration(gradient: getGradient(colors));
 }
 
 class _CharacterBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final cardsProvider = Provider.of<CardsProvider>(context);
+    final cardinfo = cardsProvider.cardInfo!;
+    final characterCard = cardsProvider.characterCard!;
+    return Container(
+      color: Colors.white,
+      height: minCardImage.height,
+      child: ListView(
+        children: [
+          Divider(thickness: 10),
+          Text('${characterCard.name} / ${cardinfo.cardId}'),
+          Text(
+            '${cardinfo.category} / ${cardinfo.colorCards} / ${characterCard.cost} Cost',
+          ),
+          Divider(),
+          Text('${characterCard.power} Power / ${characterCard.attribute}'),
+          if (characterCard.counterPower != 0)
+            Text('+${characterCard.counterPower.toString()} Counter'),
+          if (characterCard.effects.isNotEmpty) ...[
+            Divider(),
+            Text(characterCard.effects),
+          ],
+          if (characterCard.triggerEffect.isNotEmpty) ...[
+            SizedBox(height: 10),
+            Text(characterCard.triggerEffect),
+          ],
+          Divider(),
+          Text('${characterCard.type}'),
+          Divider(),
+          Text('Block ${cardinfo.block}'),
+          Text('Tournament Status ${cardinfo.tournamentStatus}'),
+          Text('Times used in decks: ${cardinfo.cardUsage}'),
+          Divider(),
+          Text(cardinfo.product),
+        ],
+      ),
+    );
   }
 }
 
@@ -70,10 +115,7 @@ class _LeaderBody extends StatelessWidget {
     return Container(
       color: Colors.white,
       height: minCardImage.height,
-      // padding: EdgeInsets.all(10),
       child: ListView(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Divider(thickness: 10),
           Text('${leaderCard.name} / ${cardinfo.cardId}'),
@@ -101,6 +143,35 @@ class _LeaderBody extends StatelessWidget {
 class _EventStageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final cardsProvider = Provider.of<CardsProvider>(context);
+    final cardinfo = cardsProvider.cardInfo!;
+    final eventStageCard = cardsProvider.eventStageCard!;
+    return Container(
+      color: Colors.white,
+      height: minCardImage.height,
+      child: ListView(
+        children: [
+          Divider(thickness: 10),
+          Text('${eventStageCard.name} / ${cardinfo.cardId}'),
+          Text(
+            '${cardinfo.category} / ${cardinfo.colorCards} / ${eventStageCard.cost} Cost',
+          ),
+          Divider(),
+          Text(eventStageCard.effects),
+          if (eventStageCard.triggerEffect.isNotEmpty) ...[
+            SizedBox(height: 10),
+            Text(eventStageCard.triggerEffect),
+          ],
+          Divider(),
+          Text('${eventStageCard.type}'),
+          Divider(),
+          Text('Block ${cardinfo.block}'),
+          Text('Tournament Status ${cardinfo.tournamentStatus}'),
+          Text('Times used in decks: ${cardinfo.cardUsage}'),
+          Divider(),
+          Text(cardinfo.product),
+        ],
+      ),
+    );
   }
 }
