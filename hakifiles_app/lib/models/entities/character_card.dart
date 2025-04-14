@@ -10,15 +10,15 @@ CharacterCard characterCardFromJson(String str) =>
 String characterCardToJson(CharacterCard data) => json.encode(data.toJson());
 
 class CharacterCard {
-  final String name;
-  final List<String> type;
-  final String effects;
-  final String triggerEffect;
-  final int cost;
-  final int power;
-  final int counterPower;
-  final List<String> attribute;
-  final String cardId;
+  String name;
+  List<String> type;
+  String effects;
+  String triggerEffect;
+  int cost;
+  int power;
+  int counterPower;
+  List<String> attribute;
+  String cardId;
 
   CharacterCard({
     required this.name,

@@ -10,12 +10,12 @@ EventStageCard eventStageCardFromJson(String str) =>
 String eventStageCardToJson(EventStageCard data) => json.encode(data.toJson());
 
 class EventStageCard {
-  final String name;
-  final List<String> type;
-  final String effects;
-  final String triggerEffect;
-  final int cost;
-  final String cardId;
+  String name;
+  List<String> type;
+  String effects;
+  String triggerEffect;
+  int cost;
+  String cardId;
 
   EventStageCard({
     required this.name,

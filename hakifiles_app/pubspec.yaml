@@ -37,6 +37,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   google_fonts: ^6.2.1
+  intl: ^0.20.2
   provider: ^6.1.4
   shared_preferences: ^2.5.3
 

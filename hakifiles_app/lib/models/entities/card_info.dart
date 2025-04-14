@@ -11,19 +11,19 @@ String cardInfoToJson(List<CardInfo> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class CardInfo {
-  final int id;
-  final dynamic image;
-  final String cardId;
-  final String category;
-  final int alternateArt;
-  final String product;
-  final String productCode;
-  final String series;
-  final String rarity;
-  final List<String> colorCards;
-  final int block;
-  final String tournamentStatus;
-  final int cardUsage;
+  int id;
+  dynamic image;
+  String cardId;
+  String category;
+  int alternateArt;
+  String product;
+  String productCode;
+  String series;
+  String rarity;
+  List<String> colorCards;
+  int block;
+  String tournamentStatus;
+  int cardUsage;
 
   CardInfo({
     required this.id,

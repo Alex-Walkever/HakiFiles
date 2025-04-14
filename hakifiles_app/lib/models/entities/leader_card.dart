@@ -10,13 +10,13 @@ LeaderCard leaderCardFromJson(String str) =>
 String leaderCardToJson(LeaderCard data) => json.encode(data.toJson());
 
 class LeaderCard {
-  final String name;
-  final List<String> type;
-  final String effects;
-  final int life;
-  final int power;
-  final List<String> attribute;
-  final String cardId;
+  String name;
+  List<String> type;
+  String effects;
+  int life;
+  int power;
+  List<String> attribute;
+  String cardId;
 
   LeaderCard({
     required this.name,

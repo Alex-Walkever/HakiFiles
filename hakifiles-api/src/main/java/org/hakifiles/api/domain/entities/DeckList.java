@@ -27,9 +27,8 @@ public class DeckList {
 
     @ElementCollection
     @MapKeyColumn(name = "deck_list")
-    @Column(name = "value")
     @CollectionTable(name = "list_attributes", joinColumns = @JoinColumn(name = "list_id"))
-    private Map<String, Integer> list;
+    private List<String> list;
 
     @ManyToOne
     @NotNull
@@ -64,7 +63,7 @@ public class DeckList {
         description = (dto.getDescription() != null) ? dto.getDescription() : "";
         youtubeLink = (dto.getYoutubeLink() != null) ? dto.getYoutubeLink() : "";
         userId = dto.getUserId();
-        list = new HashMap<>();
+        list = new ArrayList<>();
         games = new HashSet<>();
         publishedOn = LocalDateTime.now();
         isPrivate = dto.isPrivate();
@@ -110,25 +109,24 @@ public class DeckList {
         this.youtubeLink = youtubeLink;
     }
 
-    public Map<String, Integer> getList() {
+    public List<String> getList() {
         return list;
     }
 
     public void addOrRemoveToList(String card, Integer amount) {
-        Integer value = amount;
-        if (list.containsKey(card)) {
-            value += list.get(card);
-            if (value > 0) {
-                list.put(card, value);
-            } else {
+        if (amount > 0) {
+            for (int i = 0; i < amount; i++) {
+                list.add(card);
+
+            }
+        } else {
+            for (int i = 0; i < Math.abs(amount); i++) {
                 list.remove(card);
             }
-            return;
         }
-        list.put(card, value);
     }
 
-    public void setList(Map<String, Integer> list) {
+    public void setList(List<String> list) {
         this.list = list;
     }
 

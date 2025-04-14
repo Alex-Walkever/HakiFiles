@@ -15,7 +15,7 @@ class Deck {
   final String name;
   final String? description;
   final String? youtubeLink;
-  final Map<String, int>? list;
+  final List<String>? list;
   final CardInfo leader;
   final int userId;
   final List<Game>? games;
@@ -46,7 +46,7 @@ class Deck {
     name: json["name"],
     description: json["description"] ?? '',
     youtubeLink: json["youtubeLink"] ?? '',
-    list: Map.castFrom<dynamic, dynamic, String, int>(json["list"] ?? {}),
+    list: List.castFrom<dynamic, String>(json["list"] ?? {}),
     leader: CardInfo.fromJson(json["leader"]),
     userId: json["userId"],
     games: List.castFrom<dynamic, Game>(json["games"] ?? []),

@@ -30,9 +30,7 @@ class CardsProvider extends ChangeNotifier {
     final response = await HakifilesApi.httpGet(
       '${HakiRouter.cardsRoute}/$cardId',
     );
-    final cardInfoCategoryResponse = CardInfoCategoryResponse.fromJson(
-      response,
-    );
+    final cardInfoCategoryResponse = CardInfoCategory.fromJson(response);
     cardInfo = cardInfoCategoryResponse.cardInfo;
     characterCard = cardInfoCategoryResponse.characterCard;
     leaderCard = cardInfoCategoryResponse.leaderCard;

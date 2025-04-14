@@ -32,7 +32,6 @@ class _LinkTextState extends State<LinkText> {
               color: Colors.grey[700],
               decoration:
                   isHover ? TextDecoration.underline : TextDecoration.none,
-              decorationColor: Colors.white,
             ),
           ),
         ),
