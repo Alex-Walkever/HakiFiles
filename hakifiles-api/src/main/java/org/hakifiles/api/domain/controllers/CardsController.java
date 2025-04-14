@@ -139,6 +139,12 @@ public class CardsController {
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/search/leaders/{name}")
+    public ResponseEntity<List<CardInfo>> getLeadersFromName(@PathVariable String name) {
+        List<LeaderCard> cards = leaderCardService.getLeaderCardsByName(name);
+        return ResponseEntity.ok(cardInfoService.getCardsByListCardId(cards.stream().map(LeaderCard::getCardId).toList()));
+    }
+
     @GetMapping("/stages/{cardId}")
     public ResponseEntity<StageCard> getStageDetails(@PathVariable String cardId) {
         Optional<StageCard> card = stageCardService.getStageCardByCardId(cardId);

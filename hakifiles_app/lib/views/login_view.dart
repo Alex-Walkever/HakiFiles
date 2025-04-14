@@ -3,7 +3,6 @@ import 'package:hakifiles_app/Services/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/router/index.dart';
 import 'package:hakifiles_app/tools/index.dart';
-import 'package:provider/provider.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -30,14 +29,19 @@ class LoginView extends StatelessWidget {
                   child: Column(
                     children: [
                       TextFormField(
+                        autofillHints: [
+                          AutofillHints.username,
+                          AutofillHints.newPassword,
+                          AutofillHints.email,
+                        ],
                         onFieldSubmitted:
                             (value) =>
                                 onFormSumit(loginFormProvider, authProvider),
                         onChanged:
-                            (value) => loginFormProvider.emailUsername = value,
+                            (value) => loginFormProvider.nameOrEmail = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Enter your email or password';
+                            return 'Enter your email or username';
                           }
                           return null;
                         },
@@ -49,6 +53,7 @@ class LoginView extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [AutofillHints.password],
                         onFieldSubmitted:
                             (value) =>
                                 onFormSumit(loginFormProvider, authProvider),
@@ -99,7 +104,7 @@ class LoginView extends StatelessWidget {
   ) {
     if (loginFormProvider.validateForm()) {
       authProvider.login(
-        loginFormProvider.emailUsername,
+        loginFormProvider.nameOrEmail,
         loginFormProvider.password,
       );
     }

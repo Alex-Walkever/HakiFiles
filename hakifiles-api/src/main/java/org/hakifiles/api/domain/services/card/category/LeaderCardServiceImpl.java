@@ -22,6 +22,11 @@ public class LeaderCardServiceImpl implements LeaderCardService {
     }
 
     @Override
+    public List<LeaderCard> getLeaderCardsByName(String name) {
+        return repository.findByNameContaining(name);
+    }
+
+    @Override
     public LeaderCard saveCard(CardDto info) {
         LeaderCard leaderCard = CardMapper.toLeaderCard(info);
         repository.save(leaderCard);

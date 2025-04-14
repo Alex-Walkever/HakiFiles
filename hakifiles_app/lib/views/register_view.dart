@@ -30,6 +30,7 @@ class RegisterView extends StatelessWidget {
                   child: Column(
                     children: [
                       TextFormField(
+                        autofillHints: [AutofillHints.email],
                         onChanged:
                             (value) => registerFormProvider.email = value,
                         validator: (value) {
@@ -46,6 +47,10 @@ class RegisterView extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [
+                          AutofillHints.username,
+                          AutofillHints.name,
+                        ],
                         onChanged: (value) => registerFormProvider.name = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -64,6 +69,7 @@ class RegisterView extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [AutofillHints.password],
                         onChanged:
                             (value) => registerFormProvider.password = value,
                         validator: (value) {
@@ -84,6 +90,15 @@ class RegisterView extends StatelessWidget {
                         onPressed: () {
                           final validForm = registerFormProvider.validateForm();
                           if (!validForm) return;
+
+                          Provider.of<AuthProvider>(
+                            context,
+                            listen: false,
+                          ).register(
+                            email: registerFormProvider.email,
+                            name: registerFormProvider.name,
+                            password: registerFormProvider.password,
+                          );
                         },
                         child: Text("Register"),
                       ),

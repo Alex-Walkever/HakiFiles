@@ -8,7 +8,7 @@ import 'package:hakifiles_app/layouts/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 
 import 'package:hakifiles_app/router/index.dart';
-import 'package:provider/provider.dart';
+import 'package:hakifiles_app/theme/index.dart';
 
 void main() async {
   usePathUrlStrategy();
@@ -31,6 +31,7 @@ class AppState extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (context) => ProductsProvider()),
         ChangeNotifierProvider(create: (context) => CardsProvider()),
+        ChangeNotifierProvider(create: (context) => DecksProvider()),
       ],
       child: MyApp(),
     );
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
       initialRoute: HakiRouter.rootRoute,
       onGenerateRoute: HakiRouter.router.generator,
       navigatorKey: NavigationService.navigatorKey,
+      scaffoldMessengerKey: NotificationsService.messengerKey,
+      scrollBehavior: CustomScrollBehavior(),
       builder: (context, child) {
         if (child != null) {
           return HomeLayout(child: child);

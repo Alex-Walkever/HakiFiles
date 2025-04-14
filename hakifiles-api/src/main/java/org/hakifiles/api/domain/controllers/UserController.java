@@ -73,7 +73,9 @@ public class UserController {
             return Errors.validate(result);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userDto, encoder));
+        User user = userService.saveUser(userDto, encoder);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.loginUser(userDto));
     }
 
     @PostMapping("/login")

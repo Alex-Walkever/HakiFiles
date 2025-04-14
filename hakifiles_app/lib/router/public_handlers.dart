@@ -41,6 +41,14 @@ class PublicHandlers {
       return DecksView();
     },
   );
+  static Handler deckDetails = Handler(
+    handlerFunc: (context, parameters) {
+      if (parameters['deckId'] != null) {
+        return DeckView(deckId: parameters['deckId']!.first);
+      }
+      return HomeView();
+    },
+  );
   static Handler login = Handler(
     handlerFunc: (context, parameters) {
       final authProvider = Provider.of<AuthProvider>(context!);

@@ -45,6 +45,9 @@ public class DeckList {
     @CollectionTable(name = "games_attributes", joinColumns = @JoinColumn(name = "games_id"))
     private Set<Games> games;
 
+    private Long views = 0L;
+    private Long likes = 0L;
+
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
 
@@ -183,6 +186,22 @@ public class DeckList {
 
     public void setGames(Set<Games> games) {
         this.games = games;
+    }
+
+    public Long getViews() {
+        return views;
+    }
+
+    public void setViews(Long views) {
+        this.views = views;
+    }
+
+    public Long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Long likes) {
+        this.likes = likes;
     }
 
     @Override

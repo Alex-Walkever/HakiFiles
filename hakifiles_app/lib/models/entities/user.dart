@@ -5,7 +5,8 @@ class User {
   final String name;
   final String password;
   final String email;
-  final List<dynamic> deckList;
+  final List<String> deckList;
+  final List<String> likedDecks;
   final List<Authority> authorities;
 
   User({
@@ -14,6 +15,7 @@ class User {
     required this.password,
     required this.email,
     required this.deckList,
+    required this.likedDecks,
     required this.authorities,
   });
 
@@ -22,7 +24,8 @@ class User {
     name: json["name"],
     password: json["password"],
     email: json["email"],
-    deckList: List<dynamic>.from(json["deckList"].map((x) => x)),
+    deckList: List<String>.from(json["deckList"].map((x) => x.toString())),
+    likedDecks: List<String>.from(json["likedDecks"].map((x) => x.toString())),
     authorities: List<Authority>.from(
       json["authorities"].map((x) => Authority.fromJson(x)),
     ),

@@ -72,4 +72,9 @@ class CardInfo {
     "tournamentStatus": tournamentStatus,
     "cardUsage": cardUsage,
   };
+
+  @override
+  String toString() {
+    return 'id: $id|image: $image|cardId: $cardId|category: $category|alternateArt: $alternateArt|product: $product|productCode: $productCode|series: $series|rarity: $rarity|colorCards: $colorCards|block: $block|tournamentStatus: $tournamentStatus|cardUsage: $cardUsage|';
+  }
 }

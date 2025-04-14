@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface LeaderCardService {
     Optional<LeaderCard> getLeaderCardByCardId(String cardId);
 
+    List<LeaderCard> getLeaderCardsByName(String name);
+
     LeaderCard saveCard(CardDto info);
 
     void delete(String cardId);

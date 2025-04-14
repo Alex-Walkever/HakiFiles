@@ -14,11 +14,14 @@ public class ResponseGetUserDTO {
 
     private Set<String> deckList;
 
+    private Set<String> likedDeckList;
+
     public ResponseGetUserDTO(User user) {
         userId = user.getUserId();
         name = user.getName();
         email = user.getEmail();
         deckList = user.getDeckList();
+        likedDeckList = user.getLikedDecks();
     }
 
     public Long getUserId() {
@@ -51,5 +54,13 @@ public class ResponseGetUserDTO {
 
     public void setDeckList(Set<String> deckList) {
         this.deckList = deckList;
+    }
+
+    public Set<String> getLikedDeckList() {
+        return likedDeckList;
+    }
+
+    public void setLikedDeckList(Set<String> likedDeckList) {
+        this.likedDeckList = likedDeckList;
     }
 }

@@ -43,6 +43,21 @@ class CardsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<CardInfo>> getLeadersByName(String leadersName) async {
+    _cleanUp();
+    final response = await HakifilesApi.httpGet(
+      '${HakiRouter.cardsRoute}/search/leaders/$leadersName',
+    );
+
+    final cardInfoResponse = CardInfoResponse.fromJson(response);
+
+    cardsInfo = [...cardInfoResponse.cardInfoList];
+    isLoading = false;
+
+    notifyListeners();
+    return cardsInfo;
+  }
+
   _cleanUp() {
     cardInfo = null;
     characterCard = null;

@@ -8,3 +8,4 @@ export 'card_view.dart';
 export 'loading_view.dart';
 export 'auth_view.dart';
 export 'register_view.dart';
+export 'deck_view.dart';

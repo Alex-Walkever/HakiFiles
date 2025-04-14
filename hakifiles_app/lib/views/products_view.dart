@@ -6,7 +6,6 @@ import 'package:hakifiles_app/cards/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/router/index.dart';
 import 'package:hakifiles_app/tools/hakifiles_variables.dart';
-import 'package:provider/provider.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});

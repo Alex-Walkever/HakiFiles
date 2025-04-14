@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-class LoginFormProvider extends ChangeNotifier {
+class CreateDeckFormProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String nameOrEmail = '';
-  String password = '';
+  String name = '';
+  String? description = '';
+  String? youtubeLink;
+  String leader = '';
+  bool isPrivate = true;
 
   bool validateForm() {
     return formKey.currentState!.validate();
