@@ -28,6 +28,13 @@ class LoginView extends StatelessWidget {
                   key: loginFormProvider.formKey,
                   child: Column(
                     children: [
+                      if (authProvider.error != null) ...[
+                        Container(
+                          decoration: BoxDecoration(color: Colors.red.shade300),
+                          child: Text(authProvider.error!),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                       TextFormField(
                         autofillHints: [
                           AutofillHints.username,
@@ -82,6 +89,7 @@ class LoginView extends StatelessWidget {
                       LinkText(
                         text: 'Register',
                         onPresssed: () {
+                          authProvider.error = null;
                           NavigationService.navigateTo(
                             HakiRouter.registerRoute,
                           );

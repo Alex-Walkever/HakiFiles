@@ -19,9 +19,9 @@ class _DeckViewState extends State<DeckView> {
   @override
   void initState() {
     super.initState();
-    if (DecksProvider.currentDeck == null ||
-        DecksProvider.currentDeck!.id != widget.deckId) {
-      Provider.of<DecksProvider>(
+    if (SingleDeckProvider.currentDeck == null ||
+        SingleDeckProvider.currentDeck!.id != widget.deckId) {
+      Provider.of<SingleDeckProvider>(
         context,
         listen: false,
       ).deckDetails(widget.deckId);
@@ -30,8 +30,9 @@ class _DeckViewState extends State<DeckView> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<DecksProvider>(context, listen: true);
-    if (DecksProvider.currentDeck == null || DecksProvider.user == null) {
+    Provider.of<SingleDeckProvider>(context, listen: true);
+    if (SingleDeckProvider.currentDeck == null ||
+        SingleDeckProvider.user == null) {
       return NoPageFoundView();
     }
     return Container(
@@ -57,7 +58,7 @@ class _DeckViewBody extends StatefulWidget {
 }
 
 class _DeckViewBodyState extends State<_DeckViewBody> {
-  String image = DecksProvider.currentDeck!.leader.image;
+  String image = SingleDeckProvider.currentDeck!.leader.image;
 
   @override
   void initState() {
@@ -66,10 +67,10 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    final characters = DecksProvider.characterList;
-    final events = DecksProvider.eventList;
-    final stages = DecksProvider.stageList;
-    final leaders = DecksProvider.leaderList;
+    final characters = SingleDeckProvider.characterList;
+    final events = SingleDeckProvider.eventList;
+    final stages = SingleDeckProvider.stageList;
+    final leaders = SingleDeckProvider.leaderList;
 
     final size = MediaQuery.of(context).size;
     final imageWidget = getImageWidget(img: image, width: 400, height: 600);
@@ -190,7 +191,7 @@ class _GeneralTools extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deck = DecksProvider.currentDeck!;
+    final deck = SingleDeckProvider.currentDeck!;
     return Row(
       children: [
         LinkText(text: 'Export'),
@@ -209,8 +210,8 @@ class _DeckDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = DecksProvider.user!;
-    final deck = DecksProvider.currentDeck!;
+    final user = SingleDeckProvider.user!;
+    final deck = SingleDeckProvider.currentDeck!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -233,9 +234,7 @@ class _DeckDescription extends StatelessWidget {
               text: deck.likes.toString(),
               icon: Icons.heart_broken,
               tooltip: 'Likes',
-              onPressed: () {
-                print('press like');
-              },
+              onPressed: () {},
             ),
             SizedBox(width: 20),
             Text(

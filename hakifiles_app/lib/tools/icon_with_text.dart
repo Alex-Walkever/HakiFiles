@@ -7,12 +7,14 @@ class IconWithText extends StatelessWidget {
     this.icon,
     this.onPressed,
     this.tooltip,
+    this.color,
   });
 
   final String text;
   final String? tooltip;
   final IconData? icon;
   final Function? onPressed;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +24,10 @@ class IconWithText extends StatelessWidget {
           icon: Icon(icon),
           onPressed: onPressed != null ? () => onPressed!() : null,
           tooltip: tooltip,
+          style: ButtonStyle(iconColor: WidgetStatePropertyAll(color)),
         ),
         SizedBox(width: 1),
-        Text(text),
+        Text(text, style: TextStyle(color: color)),
       ],
     );
   }

@@ -32,6 +32,7 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ProductsProvider()),
         ChangeNotifierProvider(create: (context) => CardsProvider()),
         ChangeNotifierProvider(create: (context) => DecksProvider()),
+        ChangeNotifierProvider(create: (context) => SingleDeckProvider()),
       ],
       child: MyApp(),
     );

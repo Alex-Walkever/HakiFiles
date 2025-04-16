@@ -3,7 +3,7 @@ import 'package:hakifiles_app/models/entities/card_info_category.dart';
 import 'package:hakifiles_app/tools/index.dart';
 import 'package:intl/intl.dart';
 
-getImageWidget({String? img, double? width, double? height}) {
+Widget getImageWidget({String? img, double? width, double? height}) {
   return (img == null)
       ? Image(
         image: AssetImage('images/no-image.jpg'),
@@ -16,6 +16,10 @@ getImageWidget({String? img, double? width, double? height}) {
         width: width,
         height: height,
       );
+}
+
+ImageProvider<Object> getImageProvider({String? img}) {
+  return (img == null) ? AssetImage('images/no-image.jpg') : NetworkImage(img);
 }
 
 getGradient(List<String> strColors) {

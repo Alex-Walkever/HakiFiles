@@ -30,12 +30,20 @@ public class DeckList {
     @CollectionTable(name = "list_attributes", joinColumns = @JoinColumn(name = "list_id"))
     private List<String> list;
 
+    @ElementCollection
+    @MapKeyColumn(name = "considering_list")
+    @CollectionTable(name = "considering_attributes", joinColumns = @JoinColumn(name = "considering_id"))
+    private List<String> consideringList;
+
     @ManyToOne
     @NotNull
     private CardInfo leader;
 
     @NotNull
     private Long userId;
+
+    @NotNull
+    private String username;
 
     @NotNull
     private Boolean isPrivate;
@@ -49,6 +57,8 @@ public class DeckList {
 
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
+
+    String backgroundImage;
 
     public DeckList() {
 
@@ -64,6 +74,7 @@ public class DeckList {
         youtubeLink = (dto.getYoutubeLink() != null) ? dto.getYoutubeLink() : "";
         userId = dto.getUserId();
         list = new ArrayList<>();
+        consideringList = new ArrayList<>();
         games = new HashSet<>();
         publishedOn = LocalDateTime.now();
         isPrivate = dto.isPrivate();
@@ -202,6 +213,22 @@ public class DeckList {
         this.likes = likes;
     }
 
+    public List<String> getConsideringList() {
+        return consideringList;
+    }
+
+    public void setConsideringList(List<String> consideringList) {
+        this.consideringList = consideringList;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public String toString() {
         return "DeckList{" +
@@ -214,5 +241,13 @@ public class DeckList {
                 ", publishedOn=" + publishedOn +
                 ", updatedOn=" + updatedOn +
                 '}';
+    }
+
+    public String getBackgroundImage() {
+        return backgroundImage;
+    }
+
+    public void setBackgroundImage(String backgroundImage) {
+        this.backgroundImage = backgroundImage;
     }
 }

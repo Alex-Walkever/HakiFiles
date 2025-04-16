@@ -204,7 +204,7 @@ class _CreateDeckModalState extends State<CreateDeckModal> {
                                 userId: userId,
                                 isPrivate: createDeckFormProvider.isPrivate,
                               );
-                              Provider.of<DecksProvider>(
+                              Provider.of<SingleDeckProvider>(
                                 context,
                                 listen: false,
                               ).createDeck(dto);
