@@ -73,13 +73,19 @@ public class UserController {
             return Errors.validate(result);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userDto, encoder));
+        User user = userService.saveUser(userDto, encoder);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.loginUser(userDto));
     }
 
     @PostMapping("/login")
     @CrossOrigin
     public ResponseEntity<LoginResponseDto> loginUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(authenticationService.loginUser(userDto));
+        LoginResponseDto loginUser = authenticationService.loginUser(userDto);
+        if (loginUser.getUser() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(loginUser);
     }
 
     @PostMapping("/roles/add/{id}")

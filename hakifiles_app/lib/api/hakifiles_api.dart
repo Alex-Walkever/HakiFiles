@@ -21,6 +21,15 @@ class HakifilesApi {
     }
   }
 
+  static Future httpGetWithBody(String path, Map<String, dynamic> data) async {
+    try {
+      final resp = await _dio.get(path, data: data);
+      return resp.data;
+    } on DioException catch (e) {
+      throw ('Error at get: ${e.message}');
+    }
+  }
+
   static Future httpPost(String path, Map<String, dynamic> data) async {
     try {
       final resp = await _dio.post(path, data: data);

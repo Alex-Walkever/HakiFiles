@@ -68,12 +68,12 @@ public class CardInfoServiceImpl implements CardInfoService {
         CardInfo leader = deckList.getLeader();
         leader.removeCardUsage(1L);
         repository.save(leader);
-        Map<String, Integer> list = deckList.getList();
-        for (Map.Entry<String, Integer> pair : list.entrySet()) {
-            Optional<CardInfo> byCardId = repository.findByCardId(pair.getKey());
+        List<String> list = deckList.getList();
+        for (String card : list) {
+            Optional<CardInfo> byCardId = repository.findByCardId(card);
             if (byCardId.isPresent()) {
                 CardInfo cardInfo = byCardId.get();
-                cardInfo.removeCardUsage(pair.getValue().longValue());
+                cardInfo.removeCardUsage(1L);
                 repository.save(cardInfo);
             }
         }

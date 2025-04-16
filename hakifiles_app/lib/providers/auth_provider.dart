@@ -11,6 +11,8 @@ class AuthProvider extends ChangeNotifier {
   AuthStatus authStatus = AuthStatus.checking;
   User? user;
 
+  String? error;
+
   AuthProvider() {
     isAuthenticated();
   }
@@ -22,17 +24,28 @@ class AuthProvider extends ChangeNotifier {
     } else {
       data["name"] = emailUsername;
     }
-    HakifilesApi.httpPost('/user/login', data)
-        .then((json) {
-          final authResponse = AuthResponse.fromJson(json);
-          user = authResponse.user;
-          authStatus = AuthStatus.authenticated;
-          LocalStorage.setToken(authResponse.jwt);
-          NavigationService.navigateTo(HakiRouter.rootRoute);
-          HakifilesApi.configureDio();
-          notifyListeners();
-        })
-        .catchError((e) {});
+    HakifilesApi.httpPost(
+      '/user/login',
+      data,
+    ).then((json) => _login(json)).catchError((e) {
+      error = 'Username or password is wrong';
+      notifyListeners();
+    });
+  }
+
+  register({
+    required String email,
+    required String name,
+    required String password,
+  }) {
+    final data = {"email": email, "name": name, "password": password};
+    HakifilesApi.httpPost(
+      '/user/register',
+      data,
+    ).then((json) => _login(json)).catchError((e) {
+      error = "Username or email is already register";
+      notifyListeners();
+    });
   }
 
   Future<bool> isAuthenticated() async {
@@ -48,9 +61,7 @@ class AuthProvider extends ChangeNotifier {
       authStatus = AuthStatus.authenticated;
       notifyListeners();
     } catch (e) {
-      authStatus = AuthStatus.notAuthenticated;
       logout();
-      notifyListeners();
       return false;
     }
     return true;
@@ -59,6 +70,18 @@ class AuthProvider extends ChangeNotifier {
   logout() {
     LocalStorage.removeToken();
     authStatus = AuthStatus.notAuthenticated;
+    HakifilesApi.configureDio();
+    error = null;
+    notifyListeners();
+  }
+
+  _login(Map<String, dynamic> json) {
+    final authResponse = AuthResponse.fromJson(json);
+    user = authResponse.user;
+    error = null;
+    authStatus = AuthStatus.authenticated;
+    LocalStorage.setToken(authResponse.jwt);
+    NavigationService.navigateTo(HakiRouter.rootRoute);
     HakifilesApi.configureDio();
     notifyListeners();
   }

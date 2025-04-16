@@ -99,27 +99,26 @@ public class CardsController {
 
     @GetMapping("/{cardId}")
     public ResponseEntity<CardInfoWithCategoryDto> getCardInfoByCardId(@PathVariable String cardId) {
-        Optional<CardInfo> cardInfoDb = cardInfoService.getCardByCardId(cardId);
-        if (cardInfoDb.isPresent()) {
-            CardInfo cardInfo = cardInfoDb.get();
-            CardInfoWithCategoryDto card = new CardInfoWithCategoryDto(cardInfo);
-            if (cardInfo.getCategory().equals(CardInfo.Category.CHARACTER)) {
-                Optional<CharacterCard> characterCardDb = characterCardService.getCharacterCardByCardId(cardId);
-                characterCardDb.ifPresent(card::setCharacterCard);
-            } else if (cardInfo.getCategory().equals(CardInfo.Category.EVENT)) {
-                Optional<EventCard> eventCardDb = eventCardService.getEventCardByCardId(cardId);
-                eventCardDb.ifPresent(card::setEventCard);
-            } else if (cardInfo.getCategory().equals(CardInfo.Category.LEADER)) {
-                Optional<LeaderCard> leaderCardDb = leaderCardService.getLeaderCardByCardId(cardId);
-                leaderCardDb.ifPresent(card::setLeaderCard);
-            } else if (cardInfo.getCategory().equals(CardInfo.Category.STAGE)) {
-                Optional<StageCard> stageCardDb = stageCardService.getStageCardByCardId(cardId);
-                stageCardDb.ifPresent(card::setStageCard);
-            }
-            return ResponseEntity.ok(card);
+        CardInfoWithCategoryDto cardWithCategory = getCardWithCategory(cardId);
+        if (cardWithCategory != null) {
+            return ResponseEntity.ok(cardWithCategory);
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/deck-list")
+    public ResponseEntity<List<CardInfoWithCategoryDto>> getDeckList(@RequestBody Map<String, List<String>> deckList) {
+        List<CardInfoWithCategoryDto> cardList = new ArrayList<>();
+        for (String dl : deckList.get("list")) {
+            CardInfoWithCategoryDto cardWithCategory = getCardWithCategory(dl);
+            if (cardWithCategory != null) {
+                cardList.add(cardWithCategory);
+            }
+        }
+
+        return ResponseEntity.ok(cardList);
+    }
+
 
     @GetMapping("/characters/{cardId}")
     public ResponseEntity<CharacterCard> getCharacterDetails(@PathVariable String cardId) {
@@ -137,6 +136,12 @@ public class CardsController {
     public ResponseEntity<LeaderCard> getLeaderDetails(@PathVariable String cardId) {
         Optional<LeaderCard> card = leaderCardService.getLeaderCardByCardId(cardId);
         return card.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search/leaders/{name}")
+    public ResponseEntity<List<CardInfo>> getLeadersFromName(@PathVariable String name) {
+        List<LeaderCard> cards = leaderCardService.getLeaderCardsByName(name);
+        return ResponseEntity.ok(cardInfoService.getCardsByListCardId(cards.stream().map(LeaderCard::getCardId).toList()));
     }
 
     @GetMapping("/stages/{cardId}")
@@ -252,5 +257,28 @@ public class CardsController {
             return ResponseEntity.unprocessableEntity().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private CardInfoWithCategoryDto getCardWithCategory(String cardId) {
+        Optional<CardInfo> cardInfoDb = cardInfoService.getCardByCardId(cardId);
+        if (cardInfoDb.isPresent()) {
+            CardInfo cardInfo = cardInfoDb.get();
+            CardInfoWithCategoryDto card = new CardInfoWithCategoryDto(cardInfo);
+            if (cardInfo.getCategory().equals(CardInfo.Category.CHARACTER)) {
+                Optional<CharacterCard> characterCardDb = characterCardService.getCharacterCardByCardId(cardId);
+                characterCardDb.ifPresent(card::setCharacterCard);
+            } else if (cardInfo.getCategory().equals(CardInfo.Category.EVENT)) {
+                Optional<EventCard> eventCardDb = eventCardService.getEventCardByCardId(cardId);
+                eventCardDb.ifPresent(card::setEventCard);
+            } else if (cardInfo.getCategory().equals(CardInfo.Category.LEADER)) {
+                Optional<LeaderCard> leaderCardDb = leaderCardService.getLeaderCardByCardId(cardId);
+                leaderCardDb.ifPresent(card::setLeaderCard);
+            } else if (cardInfo.getCategory().equals(CardInfo.Category.STAGE)) {
+                Optional<StageCard> stageCardDb = stageCardService.getStageCardByCardId(cardId);
+                stageCardDb.ifPresent(card::setStageCard);
+            }
+            return card;
+        }
+        return null;
     }
 }

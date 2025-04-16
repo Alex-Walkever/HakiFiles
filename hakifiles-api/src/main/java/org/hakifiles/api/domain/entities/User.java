@@ -33,6 +33,9 @@ public class User {
     @ElementCollection
     private Set<String> deckList;
 
+    @ElementCollection
+    private Set<String> likedDecks;
+
     //    @ElementCollection
 //    private List<CollectionObject> collection;
     @ManyToMany(fetch = FetchType.EAGER)
@@ -47,6 +50,7 @@ public class User {
         super();
         this.authorities = new HashSet<>();
         this.deckList = new HashSet<>();
+        this.likedDecks = new HashSet<>();
     }
 
     public User(String name, String password, String email, Set<String> deckList, Set<Role> authorities) {
@@ -136,5 +140,13 @@ public class User {
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             password = encoder.encode(userDto.getPassword());
         }
+    }
+
+    public Set<String> getLikedDecks() {
+        return likedDecks;
+    }
+
+    public void setLikedDecks(Set<String> likedDecks) {
+        this.likedDecks = likedDecks;
     }
 }

@@ -19,6 +19,7 @@ class RegisterView extends StatelessWidget {
             context,
             listen: false,
           );
+          final authProvider = Provider.of<AuthProvider>(context);
           return Container(
             margin: EdgeInsets.only(top: 100),
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -29,7 +30,15 @@ class RegisterView extends StatelessWidget {
                   key: registerFormProvider.formKey,
                   child: Column(
                     children: [
+                      if (authProvider.error != null) ...[
+                        Container(
+                          decoration: BoxDecoration(color: Colors.red.shade300),
+                          child: Text(authProvider.error!),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                       TextFormField(
+                        autofillHints: [AutofillHints.email],
                         onChanged:
                             (value) => registerFormProvider.email = value,
                         validator: (value) {
@@ -46,6 +55,10 @@ class RegisterView extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [
+                          AutofillHints.username,
+                          AutofillHints.name,
+                        ],
                         onChanged: (value) => registerFormProvider.name = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -64,6 +77,7 @@ class RegisterView extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [AutofillHints.password],
                         onChanged:
                             (value) => registerFormProvider.password = value,
                         validator: (value) {
@@ -84,6 +98,12 @@ class RegisterView extends StatelessWidget {
                         onPressed: () {
                           final validForm = registerFormProvider.validateForm();
                           if (!validForm) return;
+
+                          authProvider.register(
+                            email: registerFormProvider.email,
+                            name: registerFormProvider.name,
+                            password: registerFormProvider.password,
+                          );
                         },
                         child: Text("Register"),
                       ),
@@ -91,6 +111,7 @@ class RegisterView extends StatelessWidget {
                       LinkText(
                         text: 'Login',
                         onPresssed: () {
+                          authProvider.error = null;
                           NavigationService.navigateTo(HakiRouter.loginRoute);
                         },
                       ),

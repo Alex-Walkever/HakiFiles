@@ -12,6 +12,7 @@ class HakiRouter {
   static String cardRoute = '/card';
   static String cardByCardId = '/card/:cardId';
   static String decksRoute = '/decks';
+  static String deckDetailRoute = '/decks/:deckId';
   static String stDecksRoute = '/st-decks';
   static String loginRoute = '/login';
   static String registerRoute = '/register';
@@ -23,11 +24,13 @@ class HakiRouter {
 
   static configureRoutes() {
     //Public
+    //home
     router.define(
       rootRoute,
       handler: PublicHandlers.root,
       transitionType: TransitionType.none,
     );
+    //cards
     router.define(
       cardsRoute,
       handler: PublicHandlers.cards,
@@ -43,6 +46,7 @@ class HakiRouter {
       handler: PublicHandlers.cardsByCardId,
       transitionType: TransitionType.none,
     );
+    //decks
     router.define(
       decksRoute,
       handler: PublicHandlers.decks,
@@ -53,6 +57,12 @@ class HakiRouter {
       handler: PublicHandlers.stDecks,
       transitionType: TransitionType.none,
     );
+    router.define(
+      deckDetailRoute,
+      handler: PublicHandlers.deckDetails,
+      transitionType: TransitionType.none,
+    );
+    //Auth
     router.define(
       loginRoute,
       handler: PublicHandlers.login,

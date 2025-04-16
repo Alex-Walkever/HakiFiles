@@ -3,7 +3,6 @@ import 'package:hakifiles_app/Services/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/router/index.dart';
 import 'package:hakifiles_app/tools/index.dart';
-import 'package:provider/provider.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -29,15 +28,27 @@ class LoginView extends StatelessWidget {
                   key: loginFormProvider.formKey,
                   child: Column(
                     children: [
+                      if (authProvider.error != null) ...[
+                        Container(
+                          decoration: BoxDecoration(color: Colors.red.shade300),
+                          child: Text(authProvider.error!),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                       TextFormField(
+                        autofillHints: [
+                          AutofillHints.username,
+                          AutofillHints.newPassword,
+                          AutofillHints.email,
+                        ],
                         onFieldSubmitted:
                             (value) =>
                                 onFormSumit(loginFormProvider, authProvider),
                         onChanged:
-                            (value) => loginFormProvider.emailUsername = value,
+                            (value) => loginFormProvider.nameOrEmail = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Enter your email or password';
+                            return 'Enter your email or username';
                           }
                           return null;
                         },
@@ -49,6 +60,7 @@ class LoginView extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [AutofillHints.password],
                         onFieldSubmitted:
                             (value) =>
                                 onFormSumit(loginFormProvider, authProvider),
@@ -77,6 +89,7 @@ class LoginView extends StatelessWidget {
                       LinkText(
                         text: 'Register',
                         onPresssed: () {
+                          authProvider.error = null;
                           NavigationService.navigateTo(
                             HakiRouter.registerRoute,
                           );
@@ -99,7 +112,7 @@ class LoginView extends StatelessWidget {
   ) {
     if (loginFormProvider.validateForm()) {
       authProvider.login(
-        loginFormProvider.emailUsername,
+        loginFormProvider.nameOrEmail,
         loginFormProvider.password,
       );
     }

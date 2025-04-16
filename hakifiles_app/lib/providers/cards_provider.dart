@@ -30,9 +30,7 @@ class CardsProvider extends ChangeNotifier {
     final response = await HakifilesApi.httpGet(
       '${HakiRouter.cardsRoute}/$cardId',
     );
-    final cardInfoCategoryResponse = CardInfoCategoryResponse.fromJson(
-      response,
-    );
+    final cardInfoCategoryResponse = CardInfoCategory.fromJson(response);
     cardInfo = cardInfoCategoryResponse.cardInfo;
     characterCard = cardInfoCategoryResponse.characterCard;
     leaderCard = cardInfoCategoryResponse.leaderCard;
@@ -41,6 +39,21 @@ class CardsProvider extends ChangeNotifier {
     isLoading = false;
 
     notifyListeners();
+  }
+
+  Future<List<CardInfo>> getLeadersByName(String leadersName) async {
+    _cleanUp();
+    final response = await HakifilesApi.httpGet(
+      '${HakiRouter.cardsRoute}/search/leaders/$leadersName',
+    );
+
+    final cardInfoResponse = CardInfoResponse.fromJson(response);
+
+    cardsInfo = [...cardInfoResponse.cardInfoList];
+    isLoading = false;
+
+    notifyListeners();
+    return cardsInfo;
   }
 
   _cleanUp() {

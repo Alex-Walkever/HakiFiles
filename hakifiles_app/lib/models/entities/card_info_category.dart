@@ -1,19 +1,24 @@
 import 'package:hakifiles_app/models/index.dart';
 
-class CardInfoCategoryResponse {
+List<CardInfoCategory> deckListFromJson(List<dynamic> str) =>
+    List<CardInfoCategory>.from(
+      str.map((e) => CardInfoCategory.fromJson(e)).toList(),
+    );
+
+class CardInfoCategory {
   CardInfo cardInfo;
   CharacterCard? characterCard;
   EventStageCard? eventStageCard;
   LeaderCard? leaderCard;
 
-  CardInfoCategoryResponse({
+  CardInfoCategory({
     required this.cardInfo,
     this.characterCard,
     this.eventStageCard,
     this.leaderCard,
   });
 
-  factory CardInfoCategoryResponse.fromJson(Map<String, dynamic> json) {
+  factory CardInfoCategory.fromJson(Map<String, dynamic> json) {
     CharacterCard? characterCard;
     EventStageCard? eventStageCard;
     LeaderCard? leaderCard;
@@ -29,7 +34,7 @@ class CardInfoCategoryResponse {
       eventStageCard = EventStageCard.fromJson(json["stageCard"]);
     }
 
-    return CardInfoCategoryResponse(
+    return CardInfoCategory(
       cardInfo: cardInfo,
       characterCard: characterCard,
       eventStageCard: eventStageCard,

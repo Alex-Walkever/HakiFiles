@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/tools/index.dart';
 import 'package:hakifiles_app/views/index.dart';
-import 'package:provider/provider.dart';
 
 class CardView extends StatefulWidget {
   const CardView({super.key, required this.cardId});

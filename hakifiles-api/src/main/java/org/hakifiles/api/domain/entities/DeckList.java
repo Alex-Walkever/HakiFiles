@@ -27,9 +27,13 @@ public class DeckList {
 
     @ElementCollection
     @MapKeyColumn(name = "deck_list")
-    @Column(name = "value")
     @CollectionTable(name = "list_attributes", joinColumns = @JoinColumn(name = "list_id"))
-    private Map<String, Integer> list;
+    private List<String> list;
+
+    @ElementCollection
+    @MapKeyColumn(name = "considering_list")
+    @CollectionTable(name = "considering_attributes", joinColumns = @JoinColumn(name = "considering_id"))
+    private List<String> consideringList;
 
     @ManyToOne
     @NotNull
@@ -39,14 +43,22 @@ public class DeckList {
     private Long userId;
 
     @NotNull
+    private String username;
+
+    @NotNull
     private Boolean isPrivate;
 
     @ElementCollection
     @CollectionTable(name = "games_attributes", joinColumns = @JoinColumn(name = "games_id"))
     private Set<Games> games;
 
+    private Long views = 0L;
+    private Long likes = 0L;
+
     LocalDateTime publishedOn;
     LocalDateTime updatedOn;
+
+    String backgroundImage;
 
     public DeckList() {
 
@@ -61,7 +73,8 @@ public class DeckList {
         description = (dto.getDescription() != null) ? dto.getDescription() : "";
         youtubeLink = (dto.getYoutubeLink() != null) ? dto.getYoutubeLink() : "";
         userId = dto.getUserId();
-        list = new HashMap<>();
+        list = new ArrayList<>();
+        consideringList = new ArrayList<>();
         games = new HashSet<>();
         publishedOn = LocalDateTime.now();
         isPrivate = dto.isPrivate();
@@ -107,25 +120,24 @@ public class DeckList {
         this.youtubeLink = youtubeLink;
     }
 
-    public Map<String, Integer> getList() {
+    public List<String> getList() {
         return list;
     }
 
     public void addOrRemoveToList(String card, Integer amount) {
-        Integer value = amount;
-        if (list.containsKey(card)) {
-            value += list.get(card);
-            if (value > 0) {
-                list.put(card, value);
-            } else {
+        if (amount > 0) {
+            for (int i = 0; i < amount; i++) {
+                list.add(card);
+
+            }
+        } else {
+            for (int i = 0; i < Math.abs(amount); i++) {
                 list.remove(card);
             }
-            return;
         }
-        list.put(card, value);
     }
 
-    public void setList(Map<String, Integer> list) {
+    public void setList(List<String> list) {
         this.list = list;
     }
 
@@ -185,6 +197,38 @@ public class DeckList {
         this.games = games;
     }
 
+    public Long getViews() {
+        return views;
+    }
+
+    public void setViews(Long views) {
+        this.views = views;
+    }
+
+    public Long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Long likes) {
+        this.likes = likes;
+    }
+
+    public List<String> getConsideringList() {
+        return consideringList;
+    }
+
+    public void setConsideringList(List<String> consideringList) {
+        this.consideringList = consideringList;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public String toString() {
         return "DeckList{" +
@@ -197,5 +241,13 @@ public class DeckList {
                 ", publishedOn=" + publishedOn +
                 ", updatedOn=" + updatedOn +
                 '}';
+    }
+
+    public String getBackgroundImage() {
+        return backgroundImage;
+    }
+
+    public void setBackgroundImage(String backgroundImage) {
+        this.backgroundImage = backgroundImage;
     }
 }

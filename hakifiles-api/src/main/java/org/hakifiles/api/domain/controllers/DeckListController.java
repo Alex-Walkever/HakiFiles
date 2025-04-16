@@ -7,6 +7,7 @@ import org.hakifiles.api.domain.dto.GamesDto;
 import org.hakifiles.api.domain.entities.CardInfo;
 import org.hakifiles.api.domain.entities.DeckList;
 import org.hakifiles.api.domain.entities.User;
+import org.hakifiles.api.domain.repositories.DeckListRepository;
 import org.hakifiles.api.domain.services.AuthenticationService;
 import org.hakifiles.api.domain.services.CardInfoService;
 import org.hakifiles.api.domain.services.DeckListService;
@@ -21,10 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/decks")
@@ -41,6 +39,8 @@ public class DeckListController {
 
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private DeckListRepository deckListRepository;
 
     public AuthenticationService getAuthenticationService() {
         return authenticationService;
@@ -63,11 +63,13 @@ public class DeckListController {
                 return ResponseEntity.badRequest().body(Collections.singletonMap("Error", "Card selected is not a leader"));
             }
             deckList.setLeader(leader);
+            deckList.setBackgroundImage(leader.getImage());
             deckList.setId(randomUniqueString());
+            User user = userById.get();
+            deckList.setUsername(user.getName());
             leader.addCardUsage(1L);
             cardInfoService.editCard(leader);
             DeckList savedDeckList = deckListService.saveDeckList(deckList);
-            User user = userById.get();
             user.addDeckList(savedDeckList.getId());
             userService.editUser(user);
             return ResponseEntity.ok(savedDeckList);
@@ -81,6 +83,21 @@ public class DeckListController {
         Optional<DeckList> deckListById = deckListService.getDeckListById(id);
         return deckListById.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<DeckList>> getDecksFromUser(@PathVariable String username) {
+        Optional<User> userByName = userService.getUserByName(username);
+        return userByName.map(
+                user -> ResponseEntity.ok(
+                        deckListService.getAllDecksWithId(
+                                user.getDeckList().stream().toList()))).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/multi-details")
+    public ResponseEntity<List<DeckList>> decksDetails(@RequestBody List<String> ids) {
+        return ResponseEntity.ok(deckListService.getAllDecksWithId(ids));
+    }
+
 
     @PutMapping("/games/{id}")
     @PreAuthorize("this.getAuthenticationService().hasUserFromDeckList( #id ) or hasRole('ADMIN')")
