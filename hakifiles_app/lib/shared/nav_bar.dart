@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hakifiles_app/Services/index.dart';
-import 'package:hakifiles_app/modals/index.dart';
+import 'package:hakifiles_app/dialogs/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/router/index.dart';
 import 'package:hakifiles_app/shared/widget/index.dart';
@@ -47,7 +47,7 @@ class NavBar extends StatelessWidget {
           if (authProvider.authStatus == AuthStatus.authenticated) ...[
             OutlinedButton(
               onPressed: () {
-                NavigationService.showDialogInWeb(CreateDeckModal());
+                NavigationService.showDialogInWeb(CreateDeckDialog());
               },
               child: Text('Crear deck'),
             ),

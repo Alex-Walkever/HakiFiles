@@ -48,7 +48,7 @@ public class CardsController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<CardInfo>> getCardsByDynamicSearch(@RequestParam Map<String, String> requestParam) {
+    public ResponseEntity<List<CardInfoWithCategoryDto>> getCardsByDynamicSearch(@RequestParam Map<String, String> requestParam) {
         if (requestParam.containsKey("category")) {
             Set<String> cardsId = new HashSet<>();
             List<String> category = new ArrayList<>(Arrays.stream(requestParam.get("category").split(",")).toList());
@@ -76,8 +76,15 @@ public class CardsController {
                     cardsId.add(scf.getCardId());
                 }
             }
-
-            return ResponseEntity.ok(cardInfoService.getCardsByFilterAndCardsId(requestParam, cardsId.stream().toList()));
+            List<CardInfoWithCategoryDto> cardList = new ArrayList<>();
+            List<CardInfo> cardsByFilterAndCardsId = cardInfoService.getCardsByFilterAndCardsId(requestParam, cardsId.stream().toList());
+            for (CardInfo dl : cardsByFilterAndCardsId) {
+                CardInfoWithCategoryDto cardWithCategory = getCardWithCategory(dl.getCardId());
+                if (cardWithCategory != null) {
+                    cardList.add(cardWithCategory);
+                }
+            }
+            return ResponseEntity.ok(cardList);
         }
         return ResponseEntity.notFound().build();
     }

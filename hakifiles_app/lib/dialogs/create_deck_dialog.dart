@@ -7,14 +7,14 @@ import 'package:hakifiles_app/models/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/tools/index.dart';
 
-class CreateDeckModal extends StatefulWidget {
-  const CreateDeckModal({super.key});
+class CreateDeckDialog extends StatefulWidget {
+  const CreateDeckDialog({super.key});
 
   @override
-  State<CreateDeckModal> createState() => _CreateDeckModalState();
+  State<CreateDeckDialog> createState() => _CreateDeckDialogState();
 }
 
-class _CreateDeckModalState extends State<CreateDeckModal> {
+class _CreateDeckDialogState extends State<CreateDeckDialog> {
   List<CardInfo> cards = [];
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
