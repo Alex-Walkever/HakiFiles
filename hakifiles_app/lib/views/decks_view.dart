@@ -29,7 +29,7 @@ class _DecksViewState extends State<DecksView> {
       Provider.of<DecksProvider>(
         context,
         listen: false,
-      ).getDecks(Provider.of<AuthProvider>(context, listen: false).user);
+      ).getUserDecks(Provider.of<AuthProvider>(context, listen: false).user);
     });
   }
 

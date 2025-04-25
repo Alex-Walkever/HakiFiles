@@ -3,6 +3,7 @@ import 'package:hakifiles_app/Services/index.dart';
 import 'package:hakifiles_app/api/hakifiles_api.dart';
 import 'package:hakifiles_app/models/index.dart';
 import 'package:hakifiles_app/router/index.dart';
+import 'package:hakifiles_app/tools/index.dart';
 
 class SingleDeckProvider extends ChangeNotifier {
   static Deck? currentDeck;
@@ -78,6 +79,96 @@ class SingleDeckProvider extends ChangeNotifier {
         notifyListeners();
       });
     }
+  }
+
+  int getTotalCards() {
+    int total = 1;
+    total += getTotalCharacters();
+    total += getTotalEvents();
+    total += getTotalStages();
+    return total;
+  }
+
+  int getTotalCharacters() {
+    int total = 0;
+    characterList.forEach((CardInfoCategory key, int value) => total += value);
+    return total;
+  }
+
+  int getTotalEvents() {
+    int total = 0;
+    eventList.forEach((CardInfoCategory key, int value) => total += value);
+    return total;
+  }
+
+  int getTotalStages() {
+    int total = 0;
+    stageList.forEach((CardInfoCategory key, int value) => total += value);
+    return total;
+  }
+
+  DeckBuildingErrors validateDeck() {
+    DeckBuildingErrors validateDeck = DeckBuildingErrors();
+    int totalCards = 1;
+    CardInfoCategory leader = leaderList.keys.first;
+
+    characterList.forEach((CardInfoCategory key, int value) {
+      if (value > 4) {
+        validateDeck.noMore4Copies +=
+            ' - ${key.characterCard!.name} has ${value - 4} more cards\n';
+      }
+      if (key.cardInfo.tournamentStatus.compareTo('LEGAL') != 0) {
+        validateDeck.noBannedCards += ' - ${key.characterCard!.name}\n';
+      }
+      if (!cleanUpList(
+        leader.cardInfo.colorCards,
+      ).contains(key.cardInfo.colorCards.first)) {
+        validateDeck.noSameColor += ' - ${key.characterCard!.name}\n';
+      }
+      totalCards += value;
+    });
+
+    stageList.forEach((CardInfoCategory key, int value) {
+      if (value > 4) {
+        validateDeck.noMore4Copies +=
+            ' - ${key.eventStageCard!.name} has ${value - 4} more cards\n';
+      }
+      if (key.cardInfo.tournamentStatus.compareTo('LEGAL') != 0) {
+        validateDeck.noBannedCards += ' - ${key.eventStageCard!.name}\n';
+      }
+      if (!cleanUpList(
+        leader.cardInfo.colorCards,
+      ).contains(key.cardInfo.colorCards.first)) {
+        validateDeck.noSameColor += ' - ${key.eventStageCard!.name}\n';
+      }
+      totalCards += value;
+    });
+
+    eventList.forEach((CardInfoCategory key, int value) {
+      if (value > 4) {
+        validateDeck.noMore4Copies +=
+            ' - ${key.eventStageCard!.name} has ${value - 4} more cards\n';
+      }
+      if (key.cardInfo.tournamentStatus.compareTo('LEGAL') != 0) {
+        validateDeck.noBannedCards += ' - ${key.eventStageCard!.name}\n';
+      }
+      if (!cleanUpList(
+        leader.cardInfo.colorCards,
+      ).contains(key.cardInfo.colorCards.first)) {
+        validateDeck.noSameColor += ' - ${key.eventStageCard!.name}\n';
+      }
+      totalCards += value;
+    });
+
+    if (totalCards < 51) {
+      validateDeck.deckTotal = 'Have ${51 - totalCards} less cards in the deck';
+    } else if (totalCards > 51) {
+      validateDeck.deckTotal = 'Have ${totalCards - 51} more cards in the deck';
+    } else {
+      validateDeck.deckTotal = '';
+    }
+    validateDeck.validateErrors();
+    return validateDeck;
   }
 
   _cleanUp() {

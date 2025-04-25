@@ -15,7 +15,7 @@ class CreateDeckDialog extends StatefulWidget {
 }
 
 class _CreateDeckDialogState extends State<CreateDeckDialog> {
-  List<CardInfo> cards = [];
+  List<CardInfo> cards = <CardInfo>[];
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _leaderTextController = TextEditingController();
@@ -30,21 +30,20 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => CreateDeckFormProvider(),
+    return ChangeNotifierProvider<CreateDeckFormProvider>(
+      create: (BuildContext context) => CreateDeckFormProvider(),
       child: Builder(
-        builder: (context) {
-          final size = MediaQuery.of(context).size;
-          final createDeckFormProvider = Provider.of<CreateDeckFormProvider>(
-            context,
-          );
+        builder: (BuildContext context) {
+          final Size size = MediaQuery.of(context).size;
+          final CreateDeckFormProvider createDeckFormProvider =
+              Provider.of<CreateDeckFormProvider>(context);
           return SizedBox(
             width: size.width * 0.5,
             child: Column(
-              children: [
+              children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: <Widget>[
                     Spacer(),
                     Text('Create new deck'),
                     Spacer(),
@@ -58,11 +57,12 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                 Form(
                   key: createDeckFormProvider.formKey,
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       TextFormField(
                         onChanged:
-                            (value) => createDeckFormProvider.name = value,
-                        validator: (value) {
+                            (String value) =>
+                                createDeckFormProvider.name = value,
+                        validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter the name of the deck';
                           }
@@ -80,9 +80,9 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                       SizedBox(height: 20),
                       TextFormField(
                         onChanged:
-                            (value) =>
+                            (String value) =>
                                 createDeckFormProvider.description = value,
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value != null) {
                             if (value.length > 2500) {
                               return 'The description can be higher than 2500';
@@ -99,9 +99,9 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                       SizedBox(height: 20),
                       TextFormField(
                         onChanged:
-                            (value) =>
+                            (String value) =>
                                 createDeckFormProvider.youtubeLink = value,
-                        validator: (value) {
+                        validator: (String? value) {
                           return null;
                         },
                         decoration: CustomInputs.authInputDecoration(
@@ -114,7 +114,7 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                       TextFormField(
                         enabled: false,
                         controller: _leaderTextController,
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return 'Select a leader';
                           }
@@ -129,11 +129,12 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                       ),
                       SearchBox(
                         hint: 'Pick a leader',
-                        onChanged: (value) => _onSearchChange(context, value),
+                        onChanged:
+                            (String value) => _onSearchChange(context, value),
                       ),
                       SizedBox(height: 20),
 
-                      if (cards.isNotEmpty) ...[
+                      if (cards.isNotEmpty) ...<Widget>[
                         Container(
                           height: 300,
                           margin: EdgeInsets.symmetric(horizontal: 5),
@@ -145,8 +146,8 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                               controller: _scrollController,
                               itemCount: cards.length,
                               scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                final card = cards[index];
+                              itemBuilder: (BuildContext context, int index) {
+                                final CardInfo card = cards[index];
                                 return Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 5,
@@ -166,12 +167,12 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                         SizedBox(height: 20),
                       ],
                       Row(
-                        children: [
+                        children: <Widget>[
                           Text('The deck is private: '),
                           Switch(
                             value: createDeckFormProvider.isPrivate,
                             onChanged:
-                                (value) => setState(() {
+                                (bool value) => setState(() {
                                   createDeckFormProvider.isPrivate = value;
                                 }),
                           ),
@@ -180,7 +181,7 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           OutlinedButton(
                             onPressed: () => NavigationService.pop(),
                             child: Text('Cancel'),
@@ -188,15 +189,15 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
                           SizedBox(width: 30),
                           OutlinedButton(
                             onPressed: () {
-                              final validForm =
+                              final bool validForm =
                                   createDeckFormProvider.validateForm();
                               if (!validForm) return;
-                              final userId =
+                              final int userId =
                                   Provider.of<AuthProvider>(
                                     context,
                                     listen: false,
                                   ).user!.userId;
-                              final dto = CreateDeckDto(
+                              final CreateDeckDto dto = CreateDeckDto(
                                 name: createDeckFormProvider.name,
                                 description: createDeckFormProvider.description,
                                 youtubeLink: createDeckFormProvider.youtubeLink,
@@ -228,7 +229,7 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(Duration(milliseconds: 500), () async {
       if (query.isNotEmpty) {
-        final newCards = await Provider.of<CardsProvider>(
+        final List<CardInfo> newCards = await Provider.of<CardsProvider>(
           context,
           listen: false,
         ).getLeadersByName(query);

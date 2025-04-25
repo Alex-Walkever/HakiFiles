@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hakifiles_app/Services/index.dart';
+import 'package:hakifiles_app/dialogs/index.dart';
 import 'package:hakifiles_app/models/entities/card_info.dart';
 import 'package:hakifiles_app/models/entities/character_card.dart';
 import 'package:hakifiles_app/models/entities/event_stage_card.dart';
@@ -26,6 +28,7 @@ class _CardViewState extends State<CardView> {
   @override
   Widget build(BuildContext context) {
     final CardsProvider cardsProvider = Provider.of<CardsProvider>(context);
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
     if (cardsProvider.isLoading) {
       return LoadingView();
     }
@@ -40,24 +43,45 @@ class _CardViewState extends State<CardView> {
 
     return Container(
       margin: EdgeInsets.all(12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
         children: <Widget>[
-          Spacer(),
-          Expanded(
-            child: Container(
-              decoration: buildBoxDecoration(
-                cardsProvider.cardInfo!.colorCards,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Spacer(),
+              Expanded(
+                child: Container(
+                  decoration: buildBoxDecoration(
+                    cardsProvider.cardInfo!.colorCards,
+                  ),
+                  child: imageWidget,
+                ),
               ),
-              child: imageWidget,
-            ),
+              if (cardsProvider.characterCard != null)
+                Expanded(child: _CharacterBody()),
+              if (cardsProvider.leaderCard != null)
+                Expanded(child: _LeaderBody()),
+              if (cardsProvider.eventStageCard != null)
+                Expanded(child: _EventStageBody()),
+              SizedBox(width: 20),
+              Spacer(),
+            ],
           ),
-          if (cardsProvider.characterCard != null)
-            Expanded(child: _CharacterBody()),
-          if (cardsProvider.leaderCard != null) Expanded(child: _LeaderBody()),
-          if (cardsProvider.eventStageCard != null)
-            Expanded(child: _EventStageBody()),
-          Spacer(),
+          SizedBox(height: 10),
+          if (authProvider.authStatus == AuthStatus.authenticated)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                IconWithText(
+                  text: 'Add card to deck',
+                  icon: Icons.add,
+                  onPressed:
+                      () => NavigationService.showDialogInWeb(
+                        AddCardDialog(card: cardsProvider.cardInfo!),
+                      ),
+                ),
+              ],
+            ),
         ],
       ),
     );

@@ -46,7 +46,58 @@ class _DeckViewState extends State<DeckView> {
           _GeneralTools(),
           // SizedBox(height: 20),
           Expanded(child: _DeckViewBody()),
+          _DeckInfo(),
         ],
+      ),
+    );
+  }
+}
+
+class _DeckInfo extends StatelessWidget {
+  const _DeckInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    final SingleDeckProvider singleDeckProvider =
+        Provider.of<SingleDeckProvider>(context);
+    final int total = singleDeckProvider.getTotalCards();
+    final int totalCharacters = singleDeckProvider.getTotalCharacters();
+    final int totalEvents = singleDeckProvider.getTotalEvents();
+    final int totalStages = singleDeckProvider.getTotalStages();
+    final DeckBuildingErrors deckIsLegal = singleDeckProvider.validateDeck();
+
+    return SelectionArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(
+          children: <Widget>[
+            Spacer(),
+            Text('${total.toString()} Deck'),
+            SizedBox(width: 20),
+            Row(
+              children: <Widget>[
+                Icon(
+                  deckIsLegal.isLegal
+                      ? Icons.check_box_outlined
+                      : Icons.disabled_by_default_outlined,
+                  color: deckIsLegal.isLegal ? Colors.green : Colors.red,
+                ),
+                Tooltip(
+                  message: deckIsLegal.toString(),
+                  child: deckIsLegal.isLegal ? Text('Legal') : Text('Ilegal'),
+                ),
+              ],
+            ),
+            Spacer(),
+            Text('${totalCharacters.toString()} Characters'),
+            SizedBox(width: 20),
+            Text('${totalEvents.toString()} Events'),
+            SizedBox(width: 20),
+            Text('${totalStages.toString()} Stages'),
+            SizedBox(width: 20),
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -178,6 +229,7 @@ class _CustomGridView extends StatelessWidget {
             itemCount: list.length,
             itemBuilder: (BuildContext context, int index) {
               final CardInfoCategory card = list.keys.elementAt(index);
+              final int amount = list[card]!;
 
               return MouseRegion(
                 onEnter: (PointerEnterEvent event) {
@@ -185,57 +237,81 @@ class _CustomGridView extends StatelessWidget {
                     onEnter!(card.cardInfo.image);
                   }
                 },
-                child: Stack(
-                  children: <Widget>[
-                    getImageWidget(img: card.cardInfo.image),
-                    if (card.cardInfo.category != 'LEADER') ...<Widget>[
-                      Align(
-                        alignment: Alignment(0.9, -0.8),
-                        child: IconButton(
-                          onPressed: () {
-                            Provider.of<SingleDeckProvider>(
-                              context,
-                              listen: false,
-                            ).addCardToDeck(card, 1);
-                          },
-                          icon: Icon(Icons.plus_one),
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll<Color>(
-                              Colors.white,
-                            ),
-                            fixedSize: WidgetStatePropertyAll<Size>(
-                              Size(50, 50),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment(0.9, -0.2),
-                        child: IconButton(
-                          onPressed: () {
-                            Provider.of<SingleDeckProvider>(
-                              context,
-                              listen: false,
-                            ).addCardToDeck(card, -1);
-                          },
-                          icon: Icon(Icons.exposure_minus_1),
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll<Color>(
-                              Colors.white,
-                            ),
-                            fixedSize: WidgetStatePropertyAll<Size>(
-                              Size(50, 50),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                child: _ButtonsOverCard(card: card, amount: amount),
               );
             },
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _ButtonsOverCard extends StatelessWidget {
+  const _ButtonsOverCard({required this.card, required this.amount});
+
+  final CardInfoCategory card;
+  final int amount;
+
+  @override
+  Widget build(BuildContext context) {
+    final Deck deck = SingleDeckProvider.currentDeck!;
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    return Stack(
+      children: <Widget>[
+        getImageWidget(img: card.cardInfo.image),
+        if (card.cardInfo.category != 'LEADER') ...<Widget>[
+          if (authProvider.user != null &&
+              deck.userId == authProvider.user!.userId) ...<Widget>[
+            Align(
+              alignment: Alignment(0.9, -0.8),
+              child: IconButton(
+                onPressed: () {
+                  Provider.of<SingleDeckProvider>(
+                    context,
+                    listen: false,
+                  ).addCardToDeck(card, 1);
+                },
+                icon: Icon(Icons.plus_one),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(Colors.white),
+                  fixedSize: WidgetStatePropertyAll<Size>(Size(50, 50)),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment(0.9, -0.2),
+              child: IconButton(
+                onPressed: () {
+                  Provider.of<SingleDeckProvider>(
+                    context,
+                    listen: false,
+                  ).addCardToDeck(card, -1);
+                },
+                icon: Icon(Icons.exposure_minus_1),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(Colors.white),
+                  fixedSize: WidgetStatePropertyAll<Size>(Size(50, 50)),
+                ),
+              ),
+            ),
+          ],
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                color: Colors.white,
+                width: 50,
+                height: 50,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(amount.toString()),
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -284,6 +360,7 @@ class _GeneralToolsState extends State<_GeneralTools> {
   @override
   Widget build(BuildContext context) {
     final Deck deck = SingleDeckProvider.currentDeck!;
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Row(
       children: <Widget>[
         LinkText(text: 'Export'),
@@ -293,85 +370,88 @@ class _GeneralToolsState extends State<_GeneralTools> {
           LinkText(text: 'Youtube'),
         LinkText(text: 'Get proxies'),
         Spacer(),
-        Focus(
-          autofocus: false,
-          onFocusChange: (bool value) {
-            setState(() {
-              if (!isFocused) {
-                if (value) {
-                  _tooltipController.show();
-                } else {
-                  _tooltipController.hide();
+        if (authProvider.user != null &&
+            authProvider.user!.userId == deck.userId) ...<Widget>[
+          Focus(
+            autofocus: false,
+            onFocusChange: (bool value) {
+              setState(() {
+                if (!isFocused) {
+                  if (value) {
+                    _tooltipController.show();
+                  } else {
+                    _tooltipController.hide();
+                  }
                 }
-              }
-            });
-          },
-          child: Column(
-            children: <Widget>[
-              SearchBox(
-                width: 200,
-                hint: 'Find and add cards...',
-                onChanged: (String value) => _onSearchChange(context, value),
-                key: _key,
-              ),
-            ],
+              });
+            },
+            child: Column(
+              children: <Widget>[
+                SearchBox(
+                  width: 200,
+                  hint: 'Find and add cards...',
+                  onChanged: (String value) => _onSearchChange(context, value),
+                  key: _key,
+                ),
+              ],
+            ),
           ),
-        ),
-        if (cards.isNotEmpty)
-          OverlayPortal(
-            controller: _tooltipController,
-            overlayChildBuilder: (BuildContext context) {
-              final ColorScheme colors = Theme.of(context).colorScheme;
-              return Positioned(
-                top: position.dy - 40,
-                left: position.dx + 40,
-                child: Container(
-                  color: colors.surface,
+          if (cards.isNotEmpty)
+            OverlayPortal(
+              controller: _tooltipController,
+              overlayChildBuilder: (BuildContext context) {
+                final ColorScheme colors = Theme.of(context).colorScheme;
+                return Positioned(
+                  top: position.dy - 40,
+                  left: position.dx + 40,
+                  child: Container(
+                    color: colors.surface,
 
-                  width: 170,
-                  height: 400,
-                  child: ListView.builder(
-                    physics: ClampingScrollPhysics(),
-                    itemCount: cards.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final CardInfoCategory card = cards[index];
-                      final String name = getNameFromCategory(card);
-                      final int cost = getCostFromCategory(card);
-                      return GestureDetector(
-                        onTap: () => _addCard(context, card),
-                        child: MouseRegion(
-                          onEnter: (PointerEnterEvent event) {
-                            setState(() {
-                              isFocused = true;
-                            });
-                          },
-                          onExit: (PointerExitEvent event) {
-                            setState(() {
-                              isFocused = false;
-                            });
-                          },
-                          cursor: SystemMouseCursors.click,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: colors.surface,
-                              border: Border.all(color: colors.primary),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(5),
+                    width: 170,
+                    height: 400,
+                    child: ListView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: cards.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final CardInfoCategory card = cards[index];
+                        final String name = getNameFromCategory(card);
+                        final int cost = getCostFromCategory(card);
+                        return GestureDetector(
+                          onTap: () => _addCard(context, card),
+                          child: MouseRegion(
+                            onEnter: (PointerEnterEvent event) {
+                              setState(() {
+                                isFocused = true;
+                              });
+                            },
+                            onExit: (PointerExitEvent event) {
+                              setState(() {
+                                isFocused = false;
+                              });
+                            },
+                            cursor: SystemMouseCursors.click,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                border: Border.all(color: colors.primary),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              child: Text(
+                                '$name - Cost $cost [${card.cardInfo.cardId}]',
                               ),
                             ),
-                            child: Text(
-                              '$name - Cost $cost [${card.cardInfo.cardId}]',
-                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        SizedBox(width: 50),
+                );
+              },
+            ),
+          SizedBox(width: 50),
+        ],
       ],
     );
   }
@@ -423,9 +503,9 @@ class _DeckDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(user.name),
-        SizedBox(height: 10),
         Text(deck.name),
+        SizedBox(height: 10),
+        Text(user.name),
         if (deck.description != null &&
             deck.description!.isNotEmpty) ...<Widget>[
           SizedBox(height: 10),
