@@ -19,12 +19,12 @@ class IconWithText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
+      children: <Widget>[
         IconButton(
           icon: Icon(icon),
           onPressed: onPressed != null ? () => onPressed!() : null,
           tooltip: tooltip,
-          style: ButtonStyle(iconColor: WidgetStatePropertyAll(color)),
+          style: ButtonStyle(iconColor: WidgetStatePropertyAll<Color?>(color)),
         ),
         SizedBox(width: 1),
         Text(text, style: TextStyle(color: color)),

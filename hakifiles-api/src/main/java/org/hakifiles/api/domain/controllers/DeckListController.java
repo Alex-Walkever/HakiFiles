@@ -81,7 +81,12 @@ public class DeckListController {
     @GetMapping("/{id}")
     public ResponseEntity<DeckList> deckDetails(@PathVariable String id) {
         Optional<DeckList> deckListById = deckListService.getDeckListById(id);
-        return deckListById.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (deckListById.isPresent()) {
+            DeckList deckList = deckListById.get();
+            Collections.sort(deckList.getList());
+            return ResponseEntity.ok(deckList);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/user/{username}")

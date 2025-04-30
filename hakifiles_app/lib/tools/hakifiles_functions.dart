@@ -23,7 +23,7 @@ ImageProvider<Object> getImageProvider({String? img}) {
 }
 
 getGradient(List<String> strColors) {
-  List<Color> colors = [];
+  List<Color> colors = <Color>[];
   colors.add(colorMap[strColors.first.toLowerCase()]!);
   if (strColors.length == 2) {
     colors.add(colorMap[strColors[1].toLowerCase()]!);
@@ -46,4 +46,40 @@ int sortByCategory(CardInfoCategory a, CardInfoCategory b) {
     return 1;
   }
   return 0;
+}
+
+String createQueryString(Map<String, String> query) {
+  String url = '';
+  query.forEach((String key, String value) {
+    url += '$key=$value&';
+  });
+  return url;
+}
+
+String cleanUpList(List<String> list) {
+  String clean = list.toString();
+  clean = clean.replaceAll(' ', '');
+  clean = clean.replaceAll('[', '');
+  clean = clean.replaceAll(']', '');
+  return clean;
+}
+
+String getNameFromCategory(CardInfoCategory card) {
+  if (card.cardInfo.category == 'CHARACTER') {
+    return card.characterCard!.name;
+  } else if (card.cardInfo.category == 'STAGE' ||
+      card.cardInfo.category == 'EVENT') {
+    return card.eventStageCard!.name;
+  }
+  return card.leaderCard!.name;
+}
+
+int getCostFromCategory(CardInfoCategory card) {
+  if (card.cardInfo.category == 'CHARACTER') {
+    return card.characterCard!.cost;
+  } else if (card.cardInfo.category == 'STAGE' ||
+      card.cardInfo.category == 'EVENT') {
+    return card.eventStageCard!.cost;
+  }
+  return card.leaderCard!.life;
 }

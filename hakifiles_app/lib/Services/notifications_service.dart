@@ -5,7 +5,7 @@ class NotificationsService {
       GlobalKey<ScaffoldMessengerState>();
 
   static showSnacknar(String message) {
-    final snackBar = SnackBar(content: Text(message));
+    final SnackBar snackBar = SnackBar(content: Text(message));
 
     messengerKey.currentState!.showSnackBar(snackBar);
   }

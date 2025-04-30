@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hakifiles_app/models/index.dart';
 import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/tools/index.dart';
@@ -38,13 +41,64 @@ class _DeckViewState extends State<DeckView> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
-        children: [
+        children: <Widget>[
           _DeckDescription(),
           SizedBox(height: 20),
           _GeneralTools(),
           // SizedBox(height: 20),
           Expanded(child: _DeckViewBody()),
+          _DeckInfo(),
         ],
+      ),
+    );
+  }
+}
+
+class _DeckInfo extends StatelessWidget {
+  const _DeckInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    final SingleDeckProvider singleDeckProvider =
+        Provider.of<SingleDeckProvider>(context);
+    final int total = singleDeckProvider.getTotalCards();
+    final int totalCharacters = singleDeckProvider.getTotalCharacters();
+    final int totalEvents = singleDeckProvider.getTotalEvents();
+    final int totalStages = singleDeckProvider.getTotalStages();
+    final DeckBuildingErrors deckIsLegal = singleDeckProvider.validateDeck();
+
+    return SelectionArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(
+          children: <Widget>[
+            Spacer(),
+            Text('${total.toString()} Deck'),
+            SizedBox(width: 20),
+            Row(
+              children: <Widget>[
+                Icon(
+                  deckIsLegal.isLegal
+                      ? Icons.check_box_outlined
+                      : Icons.disabled_by_default_outlined,
+                  color: deckIsLegal.isLegal ? Colors.green : Colors.red,
+                ),
+                Tooltip(
+                  message: deckIsLegal.toString(),
+                  child: deckIsLegal.isLegal ? Text('Legal') : Text('Ilegal'),
+                ),
+              ],
+            ),
+            Spacer(),
+            Text('${totalCharacters.toString()} Characters'),
+            SizedBox(width: 20),
+            Text('${totalEvents.toString()} Events'),
+            SizedBox(width: 20),
+            Text('${totalStages.toString()} Stages'),
+            SizedBox(width: 20),
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -67,31 +121,37 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    final characters = SingleDeckProvider.characterList;
-    final events = SingleDeckProvider.eventList;
-    final stages = SingleDeckProvider.stageList;
-    final leaders = SingleDeckProvider.leaderList;
+    final Map<CardInfoCategory, int> characters =
+        SingleDeckProvider.characterList;
+    final Map<CardInfoCategory, int> events = SingleDeckProvider.eventList;
+    final Map<CardInfoCategory, int> stages = SingleDeckProvider.stageList;
+    final Map<CardInfoCategory, int> leaders = SingleDeckProvider.leaderList;
 
-    final size = MediaQuery.of(context).size;
-    final imageWidget = getImageWidget(img: image, width: 400, height: 600);
+    final Size size = MediaQuery.of(context).size;
+    final Widget imageWidget = getImageWidget(
+      img: image,
+      width: 400,
+      height: 600,
+    );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (size.width > 1000) ...[
+      children: <Widget>[
+        if (size.width > 1000) ...<Widget>[
           SizedBox(width: 400, child: imageWidget),
           SizedBox(width: 20),
         ],
         Expanded(
           child: ListView(
-            children: [
+            physics: ClampingScrollPhysics(),
+            children: <Widget>[
               _CustomGridView(
                 title: 'LEADERS',
                 list: leaders,
                 width: size.width,
                 onEnter: _setImage,
               ),
-              if (characters.isNotEmpty) ...[
+              if (characters.isNotEmpty) ...<Widget>[
                 SizedBox(height: 10),
                 _CustomGridView(
                   title: 'CHARACTERS',
@@ -101,7 +161,7 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
                 ),
               ],
 
-              if (events.isNotEmpty) ...[
+              if (events.isNotEmpty) ...<Widget>[
                 SizedBox(height: 10),
                 _CustomGridView(
                   title: 'EVENTS',
@@ -111,7 +171,7 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
                 ),
               ],
 
-              if (stages.isNotEmpty) ...[
+              if (stages.isNotEmpty) ...<Widget>[
                 SizedBox(height: 10),
                 _CustomGridView(
                   title: 'STAGES',
@@ -119,6 +179,13 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
                   width: size.width,
                   onEnter: _setImage,
                 ),
+              ],
+
+              if (characters.isNotEmpty ||
+                  stages.isNotEmpty ||
+                  events.isNotEmpty) ...<Widget>[
+                SizedBox(height: 20),
+                _DeckDetailsStats(),
               ],
             ],
           ),
@@ -134,6 +201,236 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
   }
 }
 
+class _DeckDetailsStats extends StatefulWidget {
+  const _DeckDetailsStats();
+
+  @override
+  State<_DeckDetailsStats> createState() => _DeckDetailsStatsState();
+}
+
+class _DeckDetailsStatsState extends State<_DeckDetailsStats> {
+  int costIndex = 0;
+  int hoverIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    final SingleDeckProvider singleDeckProvider =
+        Provider.of<SingleDeckProvider>(context);
+
+    Map<CardInfoCategory, int> charactersByCost = singleDeckProvider
+        .getCharactersByCost(costIndex);
+    Map<CardInfoCategory, int> eventsByCost = singleDeckProvider
+        .getEventsByCost(costIndex);
+    Map<CardInfoCategory, int> stagesByCost = singleDeckProvider
+        .getStagesByCost(costIndex);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('STATS'),
+        Divider(),
+        Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: RotatedBox(
+                quarterTurns: -1,
+                child: Text('Amount of cards'),
+              ),
+            ),
+            _costGraph(singleDeckProvider),
+            Expanded(
+              child: SizedBox(
+                height: 300,
+                child: ListView(
+                  physics: ClampingScrollPhysics(),
+                  children: <Widget>[
+                    _NameStatView(title: 'CHARACTERS', list: charactersByCost),
+                    SizedBox(height: 15),
+                    _NameStatView(title: 'EVENTS', list: eventsByCost),
+                    SizedBox(height: 15),
+                    _NameStatView(title: 'STAGES', list: stagesByCost),
+                    SizedBox(height: 15),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Expanded _costGraph(SingleDeckProvider singleDeckProvider) {
+    return Expanded(
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 300,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20, right: 20),
+              child: BarChart(
+                BarChartData(
+                  barTouchData: BarTouchData(
+                    mouseCursorResolver: (
+                      FlTouchEvent touchEvent,
+                      BarTouchResponse? barTouchResponse,
+                    ) {
+                      return barTouchResponse == null ||
+                              barTouchResponse.spot == null
+                          ? MouseCursor.defer
+                          : SystemMouseCursors.click;
+                    },
+                    touchCallback: (
+                      FlTouchEvent event,
+                      BarTouchResponse? barTouchResponse,
+                    ) {
+                      setState(() {
+                        if (barTouchResponse != null &&
+                            barTouchResponse.spot != null) {
+                          if (event is FlTapUpEvent) {
+                            costIndex =
+                                barTouchResponse.spot!.touchedBarGroupIndex;
+                          }
+                          hoverIndex =
+                              barTouchResponse.spot!.touchedBarGroupIndex;
+                        } else {
+                          hoverIndex = -1;
+                        }
+                      });
+                    },
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipColor:
+                          (BarChartGroupData group) => Colors.blueGrey,
+                      getTooltipItem: (
+                        BarChartGroupData group,
+                        int groupIndex,
+                        BarChartRodData rod,
+                        int rodIndex,
+                      ) {
+                        return BarTooltipItem(
+                          '$groupIndex Cost \nCharacters ${rod.rodStackItems.first.toY}\n Events ${rod.rodStackItems[1].toY - rod.rodStackItems.first.toY}\n Stage ${rod.rodStackItems[2].toY - rod.rodStackItems[1].toY}',
+                          TextStyle(color: Colors.white),
+                        );
+                      },
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  gridData: FlGridData(drawVerticalLine: false),
+                  alignment: BarChartAlignment.center,
+                  barGroups: _createChartGroupDataForCost(singleDeckProvider),
+                ),
+              ),
+            ),
+          ),
+          Text('Cost'),
+        ],
+      ),
+    );
+  }
+
+  List<BarChartGroupData> _createChartGroupDataForCost(
+    SingleDeckProvider singleDeckProvider,
+  ) {
+    List<BarChartGroupData> listChartGroup = <BarChartGroupData>[];
+    List<int> costCharacter = singleDeckProvider.getCostPerCharacter();
+    List<int> costEvent = singleDeckProvider.getCostPerEvents();
+    List<int> costStages = singleDeckProvider.getCostPerStages();
+    for (int i = 0; i < 11; i++) {
+      double amountCharacter = costCharacter[i].toDouble();
+      double amountEvent = costEvent[i].toDouble();
+      double amountStages = costStages[i].toDouble();
+      double sum = amountCharacter + amountStages + amountEvent;
+      bool isHover = i == hoverIndex;
+
+      listChartGroup.add(
+        BarChartGroupData(
+          x: i,
+          barRods: <BarChartRodData>[
+            BarChartRodData(
+              toY: sum,
+              width: 30,
+              borderRadius: BorderRadius.circular(0),
+              rodStackItems: <BarChartRodStackItem>[
+                BarChartRodStackItem(
+                  0,
+                  amountCharacter,
+                  Colors.lightBlue,
+                  BorderSide(width: isHover ? 1 : 0),
+                ),
+                BarChartRodStackItem(
+                  amountCharacter,
+                  amountEvent + amountCharacter,
+                  Colors.orange,
+                  BorderSide(width: isHover ? 1 : 0),
+                ),
+                BarChartRodStackItem(
+                  amountCharacter + amountEvent,
+                  amountCharacter + amountEvent + amountStages,
+                  Colors.green,
+                  BorderSide(width: isHover ? 1 : 0),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+    return listChartGroup;
+  }
+}
+
+class _NameStatView extends StatelessWidget {
+  const _NameStatView({required this.title, required this.list});
+
+  final String title;
+  final Map<CardInfoCategory, int> list;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            SizedBox(width: 10),
+            Text(title),
+            Spacer(),
+            Text('(${list.length})'),
+            SizedBox(width: 10),
+          ],
+        ),
+        Divider(),
+        ..._getWidget(),
+      ],
+    );
+  }
+
+  List<Widget> _getWidget() {
+    List<Widget> widgets = <Widget>[];
+    list.forEach((CardInfoCategory key, int value) {
+      widgets.add(
+        Row(
+          children: <Widget>[
+            SizedBox(width: 15),
+            Text('${getNameFromCategory(key)} - ${key.cardInfo.cardId}'),
+            Spacer(),
+            Text('x$value'),
+            SizedBox(width: 15),
+          ],
+        ),
+      );
+    });
+    return widgets;
+  }
+}
+
 class _CustomGridView extends StatelessWidget {
   const _CustomGridView({
     required this.title,
@@ -143,16 +440,17 @@ class _CustomGridView extends StatelessWidget {
   });
 
   final String title;
-  final List<CardInfoCategory> list;
+  final Map<CardInfoCategory, int> list;
   final double width;
   final Function(String)? onEnter;
 
   @override
   Widget build(BuildContext context) {
-    final axisCounts = max((width / minCardImage.width).toInt(), 1);
+    final int axisCounts = max((width / minCardImage.width).toInt(), 1);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(title),
         Divider(),
         SizedBox(height: 10),
@@ -167,16 +465,17 @@ class _CustomGridView extends StatelessWidget {
               mainAxisSpacing: 10,
             ),
             itemCount: list.length,
-            itemBuilder: (context, index) {
-              final card = list[index];
+            itemBuilder: (BuildContext context, int index) {
+              final CardInfoCategory card = list.keys.elementAt(index);
+              final int amount = list[card]!;
 
               return MouseRegion(
-                onEnter: (event) {
+                onEnter: (PointerEnterEvent event) {
                   if (onEnter != null) {
                     onEnter!(card.cardInfo.image);
                   }
                 },
-                child: getImageWidget(img: card.cardInfo.image),
+                child: _ButtonsOverCard(card: card, amount: amount),
               );
             },
           ),
@@ -186,22 +485,249 @@ class _CustomGridView extends StatelessWidget {
   }
 }
 
-class _GeneralTools extends StatelessWidget {
-  const _GeneralTools();
+class _ButtonsOverCard extends StatelessWidget {
+  const _ButtonsOverCard({required this.card, required this.amount});
+
+  final CardInfoCategory card;
+  final int amount;
 
   @override
   Widget build(BuildContext context) {
-    final deck = SingleDeckProvider.currentDeck!;
+    final Deck deck = SingleDeckProvider.currentDeck!;
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    return Stack(
+      children: <Widget>[
+        getImageWidget(img: card.cardInfo.image),
+        if (card.cardInfo.category != 'LEADER') ...<Widget>[
+          if (authProvider.user != null &&
+              deck.userId == authProvider.user!.userId) ...<Widget>[
+            Align(
+              alignment: Alignment(0.9, -0.8),
+              child: IconButton(
+                onPressed: () {
+                  Provider.of<SingleDeckProvider>(
+                    context,
+                    listen: false,
+                  ).addCardToDeck(card, 1);
+                },
+                icon: Icon(Icons.plus_one),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(Colors.white),
+                  fixedSize: WidgetStatePropertyAll<Size>(Size(50, 50)),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment(0.9, -0.2),
+              child: IconButton(
+                onPressed: () {
+                  Provider.of<SingleDeckProvider>(
+                    context,
+                    listen: false,
+                  ).addCardToDeck(card, -1);
+                },
+                icon: Icon(Icons.exposure_minus_1),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(Colors.white),
+                  fixedSize: WidgetStatePropertyAll<Size>(Size(50, 50)),
+                ),
+              ),
+            ),
+          ],
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                color: Colors.white,
+                width: 50,
+                height: 50,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(amount.toString()),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _GeneralTools extends StatefulWidget {
+  const _GeneralTools();
+
+  @override
+  State<_GeneralTools> createState() => _GeneralToolsState();
+}
+
+class _GeneralToolsState extends State<_GeneralTools> {
+  Timer? _debounce;
+  final FocusNode _focusNode = FocusNode();
+  final OverlayPortalController _tooltipController = OverlayPortalController();
+  List<CardInfoCategory> cards = <CardInfoCategory>[];
+  final GlobalKey _key = GlobalKey();
+  RenderBox? renderBox;
+  Offset position = Offset.zero;
+  bool isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getWidgetPosition();
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _getWidgetPosition() {
+    renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      position = renderBox!.localToGlobal(Offset.zero);
+    }
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Deck deck = SingleDeckProvider.currentDeck!;
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Row(
-      children: [
+      children: <Widget>[
         LinkText(text: 'Export'),
         LinkText(text: 'Import'),
         LinkText(text: 'Add game'),
         if (deck.youtubeLink != null && deck.youtubeLink!.isNotEmpty)
           LinkText(text: 'Youtube'),
         LinkText(text: 'Get proxies'),
+        Spacer(),
+        if (authProvider.user != null &&
+            authProvider.user!.userId == deck.userId) ...<Widget>[
+          Focus(
+            autofocus: false,
+            onFocusChange: (bool value) {
+              setState(() {
+                if (!isFocused) {
+                  if (value) {
+                    _tooltipController.show();
+                  } else {
+                    _tooltipController.hide();
+                  }
+                }
+              });
+            },
+            child: Column(
+              children: <Widget>[
+                SearchBox(
+                  width: 200,
+                  hint: 'Find and add cards...',
+                  onChanged: (String value) => _onSearchChange(context, value),
+                  key: _key,
+                ),
+              ],
+            ),
+          ),
+          if (cards.isNotEmpty)
+            OverlayPortal(
+              controller: _tooltipController,
+              overlayChildBuilder: (BuildContext context) {
+                final ColorScheme colors = Theme.of(context).colorScheme;
+                return Positioned(
+                  top: position.dy - 40,
+                  left: position.dx + 40,
+                  child: Container(
+                    color: colors.surface,
+
+                    width: 170,
+                    height: 400,
+                    child: ListView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: cards.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final CardInfoCategory card = cards[index];
+                        final String name = getNameFromCategory(card);
+                        final int cost = getCostFromCategory(card);
+                        return GestureDetector(
+                          onTap: () => _addCard(context, card),
+                          child: MouseRegion(
+                            onEnter: (PointerEnterEvent event) {
+                              setState(() {
+                                isFocused = true;
+                              });
+                            },
+                            onExit: (PointerExitEvent event) {
+                              setState(() {
+                                isFocused = false;
+                              });
+                            },
+                            cursor: SystemMouseCursors.click,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                border: Border.all(color: colors.primary),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              child: Text(
+                                '$name - Cost $cost [${card.cardInfo.cardId}]',
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          SizedBox(width: 50),
+        ],
       ],
     );
+  }
+
+  _addCard(BuildContext context, CardInfoCategory cardInfoCategory) {
+    Provider.of<SingleDeckProvider>(
+      context,
+      listen: false,
+    ).addCardToDeck(cardInfoCategory, 1);
+    setState(() {
+      isFocused = false;
+      _tooltipController.hide();
+    });
+  }
+
+  _onSearchChange(BuildContext context, String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(Duration(milliseconds: 500), () async {
+      if (query.isNotEmpty) {
+        Map<String, String> finalQuery = <String, String>{};
+        finalQuery['name'] = query;
+        finalQuery['category'] = 'STAGE,CHARACTER,EVENT';
+        finalQuery['color'] = cleanUpList(
+          SingleDeckProvider.leaderList.keys.first.cardInfo.colorCards,
+        );
+        finalQuery['status'] = 'LEGAL';
+        final List<CardInfoCategory> newCards =
+            await Provider.of<CardsProvider>(
+              context,
+              listen: false,
+            ).getCardsByDynamicSearch(finalQuery);
+        setState(() {
+          cards = newCards;
+          _tooltipController.show();
+          isFocused = true;
+        });
+      }
+    });
   }
 }
 
@@ -210,20 +736,21 @@ class _DeckDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = SingleDeckProvider.user!;
-    final deck = SingleDeckProvider.currentDeck!;
+    final User user = SingleDeckProvider.user!;
+    final Deck deck = SingleDeckProvider.currentDeck!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(user.name),
-        SizedBox(height: 10),
+      children: <Widget>[
         Text(deck.name),
-        if (deck.description != null && deck.description!.isNotEmpty) ...[
+        SizedBox(height: 10),
+        Text(user.name),
+        if (deck.description != null &&
+            deck.description!.isNotEmpty) ...<Widget>[
           SizedBox(height: 10),
           Text(deck.description!),
         ],
         Row(
-          children: [
+          children: <Widget>[
             IconWithText(
               text: deck.views.toString(),
               icon: Icons.remove_red_eye_outlined,

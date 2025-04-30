@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hakifiles_app/api/hakifiles_api.dart';
 import 'package:hakifiles_app/models/index.dart';
 import 'package:hakifiles_app/router/index.dart';
+import 'package:hakifiles_app/tools/index.dart';
 
 class CardsProvider extends ChangeNotifier {
-  List<CardInfo> cardsInfo = [];
+  List<CardInfo> cardsInfo = <CardInfo>[];
   CardInfo? cardInfo;
   CharacterCard? characterCard;
   LeaderCard? leaderCard;
@@ -13,13 +14,15 @@ class CardsProvider extends ChangeNotifier {
 
   getCardsInfo(String product) async {
     _cleanUp();
-    final response = await HakifilesApi.httpGet(
+    final dynamic response = await HakifilesApi.httpGet(
       '${HakiRouter.cardsRoute}/product?product=$product',
     );
 
-    final cardInfoResponse = CardInfoResponse.fromJson(response);
+    final CardInfoResponse cardInfoResponse = CardInfoResponse.fromJson(
+      response,
+    );
 
-    cardsInfo = [...cardInfoResponse.cardInfoList];
+    cardsInfo = <CardInfo>[...cardInfoResponse.cardInfoList];
     isLoading = false;
 
     notifyListeners();
@@ -27,10 +30,12 @@ class CardsProvider extends ChangeNotifier {
 
   getCard(String cardId) async {
     _cleanUp();
-    final response = await HakifilesApi.httpGet(
+    final dynamic response = await HakifilesApi.httpGet(
       '${HakiRouter.cardsRoute}/$cardId',
     );
-    final cardInfoCategoryResponse = CardInfoCategory.fromJson(response);
+    final CardInfoCategory cardInfoCategoryResponse = CardInfoCategory.fromJson(
+      response,
+    );
     cardInfo = cardInfoCategoryResponse.cardInfo;
     characterCard = cardInfoCategoryResponse.characterCard;
     leaderCard = cardInfoCategoryResponse.leaderCard;
@@ -43,17 +48,33 @@ class CardsProvider extends ChangeNotifier {
 
   Future<List<CardInfo>> getLeadersByName(String leadersName) async {
     _cleanUp();
-    final response = await HakifilesApi.httpGet(
+    final dynamic response = await HakifilesApi.httpGet(
       '${HakiRouter.cardsRoute}/search/leaders/$leadersName',
     );
 
-    final cardInfoResponse = CardInfoResponse.fromJson(response);
+    final CardInfoResponse cardInfoResponse = CardInfoResponse.fromJson(
+      response,
+    );
 
-    cardsInfo = [...cardInfoResponse.cardInfoList];
+    cardsInfo = <CardInfo>[...cardInfoResponse.cardInfoList];
     isLoading = false;
 
     notifyListeners();
     return cardsInfo;
+  }
+
+  Future<List<CardInfoCategory>> getCardsByDynamicSearch(
+    Map<String, String> query,
+  ) async {
+    final String queryString = createQueryString(query);
+    final dynamic response = await HakifilesApi.httpGet(
+      '${HakiRouter.cardsRoute}/search?$queryString',
+    );
+
+    final List<CardInfoCategory> cardInfoResponse = deckListFromJson(response);
+
+    notifyListeners();
+    return cardInfoResponse;
   }
 
   _cleanUp() {

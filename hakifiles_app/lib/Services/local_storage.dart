@@ -18,4 +18,12 @@ class LocalStorage {
   static removeToken() {
     _preferences.remove('token');
   }
+
+  static setTheme(bool themeIsDark) {
+    _preferences.setBool('theme', themeIsDark);
+  }
+
+  static getTheme() {
+    return _preferences.getBool('theme');
+  }
 }

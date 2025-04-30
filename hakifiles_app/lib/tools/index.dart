@@ -4,3 +4,4 @@ export 'custom_inputs.dart';
 export 'link_text.dart';
 export 'search_box.dart';
 export 'icon_with_text.dart';
+export 'deck_building_errors.dart';
