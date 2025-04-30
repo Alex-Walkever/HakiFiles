@@ -10,13 +10,14 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       width: double.infinity,
       height: 75,
       decoration: buildBoxDecoration(),
       child: Row(
-        children: [
+        children: <Widget>[
           Spacer(),
           //Logo
           Logo(),
@@ -38,13 +39,14 @@ class NavBar extends StatelessWidget {
           SizedBox(width: 10),
           Spacer(),
           //auth
-          if (authProvider.authStatus == AuthStatus.notAuthenticated) ...[
+          if (authProvider.authStatus ==
+              AuthStatus.notAuthenticated) ...<Widget>[
             CustomNavigationButton(
               title: 'Login / Register',
               url: HakiRouter.loginRoute,
             ),
           ],
-          if (authProvider.authStatus == AuthStatus.authenticated) ...[
+          if (authProvider.authStatus == AuthStatus.authenticated) ...<Widget>[
             OutlinedButton(
               onPressed: () {
                 NavigationService.showDialogInWeb(CreateDeckDialog());
@@ -54,7 +56,7 @@ class NavBar extends StatelessWidget {
             SizedBox(width: 20),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Text('Welcome ${authProvider.user!.name}'),
                 OutlinedButton(
                   onPressed: () => authProvider.logout(),
@@ -65,7 +67,18 @@ class NavBar extends StatelessWidget {
           ],
           SizedBox(width: 10),
           //theme change
-          Container(color: Colors.cyan, height: 50, width: 50),
+          IconButton(
+            onPressed:
+                () => themeProvider.changeTheme(
+                  themeProvider.isDark ? ThemeData.light() : ThemeData.dark(),
+                  !themeProvider.isDark,
+                ),
+            icon: Icon(
+              themeProvider.isDark
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined,
+            ),
+          ),
           SizedBox(width: 10),
         ],
       ),

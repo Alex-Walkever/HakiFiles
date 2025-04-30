@@ -81,6 +81,60 @@ class SingleDeckProvider extends ChangeNotifier {
     }
   }
 
+  List<int> getCostPerCharacter() {
+    List<int> costPerCard = List<int>.filled(11, 0);
+    characterList.forEach((CardInfoCategory key, int value) {
+      costPerCard[key.characterCard!.cost] += value;
+    });
+    return costPerCard;
+  }
+
+  List<int> getCostPerEvents() {
+    List<int> costPerCard = List<int>.filled(11, 0);
+    eventList.forEach((CardInfoCategory key, int value) {
+      costPerCard[key.eventStageCard!.cost] += value;
+    });
+    return costPerCard;
+  }
+
+  List<int> getCostPerStages() {
+    List<int> costPerCard = List<int>.filled(11, 0);
+    stageList.forEach((CardInfoCategory key, int value) {
+      costPerCard[key.eventStageCard!.cost] += value;
+    });
+    return costPerCard;
+  }
+
+  Map<CardInfoCategory, int> getCharactersByCost(int cost) {
+    Map<CardInfoCategory, int> cards = <CardInfoCategory, int>{};
+    characterList.forEach((CardInfoCategory key, int value) {
+      if (key.characterCard!.cost == cost) {
+        cards[key] = value;
+      }
+    });
+    return cards;
+  }
+
+  Map<CardInfoCategory, int> getEventsByCost(int cost) {
+    Map<CardInfoCategory, int> cards = <CardInfoCategory, int>{};
+    eventList.forEach((CardInfoCategory key, int value) {
+      if (key.eventStageCard!.cost == cost) {
+        cards[key] = value;
+      }
+    });
+    return cards;
+  }
+
+  Map<CardInfoCategory, int> getStagesByCost(int cost) {
+    Map<CardInfoCategory, int> cards = <CardInfoCategory, int>{};
+    stageList.forEach((CardInfoCategory key, int value) {
+      if (key.eventStageCard!.cost == cost) {
+        cards[key] = value;
+      }
+    });
+    return cards;
+  }
+
   int getTotalCards() {
     int total = 1;
     total += getTotalCharacters();

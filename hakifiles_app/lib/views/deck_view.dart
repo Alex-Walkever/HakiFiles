@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hakifiles_app/models/index.dart';
@@ -179,6 +180,13 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
                   onEnter: _setImage,
                 ),
               ],
+
+              if (characters.isNotEmpty ||
+                  stages.isNotEmpty ||
+                  events.isNotEmpty) ...<Widget>[
+                SizedBox(height: 20),
+                _DeckDetailsStats(),
+              ],
             ],
           ),
         ),
@@ -190,6 +198,236 @@ class _DeckViewBodyState extends State<_DeckViewBody> {
     setState(() {
       image = img;
     });
+  }
+}
+
+class _DeckDetailsStats extends StatefulWidget {
+  const _DeckDetailsStats();
+
+  @override
+  State<_DeckDetailsStats> createState() => _DeckDetailsStatsState();
+}
+
+class _DeckDetailsStatsState extends State<_DeckDetailsStats> {
+  int costIndex = 0;
+  int hoverIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    final SingleDeckProvider singleDeckProvider =
+        Provider.of<SingleDeckProvider>(context);
+
+    Map<CardInfoCategory, int> charactersByCost = singleDeckProvider
+        .getCharactersByCost(costIndex);
+    Map<CardInfoCategory, int> eventsByCost = singleDeckProvider
+        .getEventsByCost(costIndex);
+    Map<CardInfoCategory, int> stagesByCost = singleDeckProvider
+        .getStagesByCost(costIndex);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('STATS'),
+        Divider(),
+        Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: RotatedBox(
+                quarterTurns: -1,
+                child: Text('Amount of cards'),
+              ),
+            ),
+            _costGraph(singleDeckProvider),
+            Expanded(
+              child: SizedBox(
+                height: 300,
+                child: ListView(
+                  physics: ClampingScrollPhysics(),
+                  children: <Widget>[
+                    _NameStatView(title: 'CHARACTERS', list: charactersByCost),
+                    SizedBox(height: 15),
+                    _NameStatView(title: 'EVENTS', list: eventsByCost),
+                    SizedBox(height: 15),
+                    _NameStatView(title: 'STAGES', list: stagesByCost),
+                    SizedBox(height: 15),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Expanded _costGraph(SingleDeckProvider singleDeckProvider) {
+    return Expanded(
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 300,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20, right: 20),
+              child: BarChart(
+                BarChartData(
+                  barTouchData: BarTouchData(
+                    mouseCursorResolver: (
+                      FlTouchEvent touchEvent,
+                      BarTouchResponse? barTouchResponse,
+                    ) {
+                      return barTouchResponse == null ||
+                              barTouchResponse.spot == null
+                          ? MouseCursor.defer
+                          : SystemMouseCursors.click;
+                    },
+                    touchCallback: (
+                      FlTouchEvent event,
+                      BarTouchResponse? barTouchResponse,
+                    ) {
+                      setState(() {
+                        if (barTouchResponse != null &&
+                            barTouchResponse.spot != null) {
+                          if (event is FlTapUpEvent) {
+                            costIndex =
+                                barTouchResponse.spot!.touchedBarGroupIndex;
+                          }
+                          hoverIndex =
+                              barTouchResponse.spot!.touchedBarGroupIndex;
+                        } else {
+                          hoverIndex = -1;
+                        }
+                      });
+                    },
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipColor:
+                          (BarChartGroupData group) => Colors.blueGrey,
+                      getTooltipItem: (
+                        BarChartGroupData group,
+                        int groupIndex,
+                        BarChartRodData rod,
+                        int rodIndex,
+                      ) {
+                        return BarTooltipItem(
+                          '$groupIndex Cost \nCharacters ${rod.rodStackItems.first.toY}\n Events ${rod.rodStackItems[1].toY - rod.rodStackItems.first.toY}\n Stage ${rod.rodStackItems[2].toY - rod.rodStackItems[1].toY}',
+                          TextStyle(color: Colors.white),
+                        );
+                      },
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  gridData: FlGridData(drawVerticalLine: false),
+                  alignment: BarChartAlignment.center,
+                  barGroups: _createChartGroupDataForCost(singleDeckProvider),
+                ),
+              ),
+            ),
+          ),
+          Text('Cost'),
+        ],
+      ),
+    );
+  }
+
+  List<BarChartGroupData> _createChartGroupDataForCost(
+    SingleDeckProvider singleDeckProvider,
+  ) {
+    List<BarChartGroupData> listChartGroup = <BarChartGroupData>[];
+    List<int> costCharacter = singleDeckProvider.getCostPerCharacter();
+    List<int> costEvent = singleDeckProvider.getCostPerEvents();
+    List<int> costStages = singleDeckProvider.getCostPerStages();
+    for (int i = 0; i < 11; i++) {
+      double amountCharacter = costCharacter[i].toDouble();
+      double amountEvent = costEvent[i].toDouble();
+      double amountStages = costStages[i].toDouble();
+      double sum = amountCharacter + amountStages + amountEvent;
+      bool isHover = i == hoverIndex;
+
+      listChartGroup.add(
+        BarChartGroupData(
+          x: i,
+          barRods: <BarChartRodData>[
+            BarChartRodData(
+              toY: sum,
+              width: 30,
+              borderRadius: BorderRadius.circular(0),
+              rodStackItems: <BarChartRodStackItem>[
+                BarChartRodStackItem(
+                  0,
+                  amountCharacter,
+                  Colors.lightBlue,
+                  BorderSide(width: isHover ? 1 : 0),
+                ),
+                BarChartRodStackItem(
+                  amountCharacter,
+                  amountEvent + amountCharacter,
+                  Colors.orange,
+                  BorderSide(width: isHover ? 1 : 0),
+                ),
+                BarChartRodStackItem(
+                  amountCharacter + amountEvent,
+                  amountCharacter + amountEvent + amountStages,
+                  Colors.green,
+                  BorderSide(width: isHover ? 1 : 0),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+    return listChartGroup;
+  }
+}
+
+class _NameStatView extends StatelessWidget {
+  const _NameStatView({required this.title, required this.list});
+
+  final String title;
+  final Map<CardInfoCategory, int> list;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            SizedBox(width: 10),
+            Text(title),
+            Spacer(),
+            Text('(${list.length})'),
+            SizedBox(width: 10),
+          ],
+        ),
+        Divider(),
+        ..._getWidget(),
+      ],
+    );
+  }
+
+  List<Widget> _getWidget() {
+    List<Widget> widgets = <Widget>[];
+    list.forEach((CardInfoCategory key, int value) {
+      widgets.add(
+        Row(
+          children: <Widget>[
+            SizedBox(width: 15),
+            Text('${getNameFromCategory(key)} - ${key.cardInfo.cardId}'),
+            Spacer(),
+            Text('x$value'),
+            SizedBox(width: 15),
+          ],
+        ),
+      );
+    });
+    return widgets;
   }
 }
 

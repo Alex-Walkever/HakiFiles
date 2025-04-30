@@ -8,7 +8,9 @@ import 'package:hakifiles_app/providers/index.dart';
 import 'package:hakifiles_app/tools/index.dart';
 
 class CreateDeckDialog extends StatefulWidget {
-  const CreateDeckDialog({super.key});
+  const CreateDeckDialog({super.key, this.cardId});
+
+  final String? cardId;
 
   @override
   State<CreateDeckDialog> createState() => _CreateDeckDialogState();
@@ -37,6 +39,9 @@ class _CreateDeckDialogState extends State<CreateDeckDialog> {
           final Size size = MediaQuery.of(context).size;
           final CreateDeckFormProvider createDeckFormProvider =
               Provider.of<CreateDeckFormProvider>(context);
+          if (createDeckFormProvider.leader.isEmpty && widget.cardId != null) {
+            _leaderTextController.text = widget.cardId!;
+          }
           return SizedBox(
             width: size.width * 0.5,
             child: Column(

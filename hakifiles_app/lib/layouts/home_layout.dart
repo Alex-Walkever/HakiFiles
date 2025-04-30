@@ -8,12 +8,11 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      // appBar: AppBar(toolbarHeight: 75, flexibleSpace: NavBar()),
       body: SafeArea(
         child: ListView(
-          children: [
+          children: <Widget>[
             NavBar(),
             SizedBox(height: size.height - 75, width: size.width, child: child),
           ],

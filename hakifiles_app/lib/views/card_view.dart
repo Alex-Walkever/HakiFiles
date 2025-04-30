@@ -72,14 +72,26 @@ class _CardViewState extends State<CardView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                IconWithText(
-                  text: 'Add card to deck',
-                  icon: Icons.add,
-                  onPressed:
-                      () => NavigationService.showDialogInWeb(
-                        AddCardDialog(card: cardsProvider.cardInfo!),
-                      ),
-                ),
+                if (cardsProvider.cardInfo!.category != 'LEADER')
+                  IconWithText(
+                    text: 'Add card to deck',
+                    icon: Icons.add,
+                    onPressed:
+                        () => NavigationService.showDialogInWeb(
+                          AddCardDialog(card: cardsProvider.cardInfo!),
+                        ),
+                  ),
+                if (cardsProvider.cardInfo!.category == 'LEADER')
+                  IconWithText(
+                    text: 'Create a deck with this leader',
+                    icon: Icons.add,
+                    onPressed:
+                        () => NavigationService.showDialogInWeb(
+                          CreateDeckDialog(
+                            cardId: cardsProvider.cardInfo!.cardId,
+                          ),
+                        ),
+                  ),
               ],
             ),
         ],

@@ -30,6 +30,10 @@ class AppState extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => AuthProvider(),
         ),
+        ChangeNotifierProvider<ThemeProvider>(
+          lazy: false,
+          create: (BuildContext context) => ThemeProvider(),
+        ),
         ChangeNotifierProvider<ProductsProvider>(
           create: (BuildContext context) => ProductsProvider(),
         ),
@@ -53,11 +57,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light,
-      darkTheme: ThemeData.dark(),
-      theme: ThemeData.light(),
+      theme: themeProvider.theme,
       title: 'HakiFiles',
       initialRoute: HakiRouter.rootRoute,
       onGenerateRoute: HakiRouter.router.generator,
